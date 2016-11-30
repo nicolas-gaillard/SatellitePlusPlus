@@ -3,6 +3,9 @@
 #include <string>
 #include <fstream>
 #include "StructData.h"
+#include <sstream>
+#include <vector>
+#include <iostream>
 
 class DataReceiver
 {
@@ -19,4 +22,3 @@ private:
 	std::ifstream * infile;
 
 };
-
