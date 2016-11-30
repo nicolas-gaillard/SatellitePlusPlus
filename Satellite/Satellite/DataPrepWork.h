@@ -1,9 +1,9 @@
 #pragma once
 
 #include "SimulationData.h"
-#include <string>
-#include <fstream>
+#include <map>
 #include <vector> 
+#include <utility>
 
 using namespace std;
 
@@ -17,13 +17,13 @@ private :
 public :
 	// Constructors and destructor : 
 	DataPrepWork();
-	DataPrepWork(SimulationData, map<long, pair<Image, Satelite> > *, map<Image, vector<Satelite> >);
+	DataPrepWork(SimulationData*, map<long, pair<Image, Satelite> > *, map<Image, vector<Satelite> >);
 	~DataPrepWork();
 
 	// Functions :
 	map<long, pair<Image, Satelite> > GetTimeLine();
 
 	// Getters and setters :
-	void setData(SimulationData);
-	SimulationData getData();
+	void setData(SimulationData*);
+	SimulationData* getData();
 };
