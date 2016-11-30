@@ -17,9 +17,13 @@ private :
 public :
 	// Constructors and destructor : 
 	DataPrepWork();
-	DataPrepWork(SimulationData, map<long, pair<Image, Satelite> >, map<Image, vector<Satelite> >);
+	DataPrepWork(SimulationData, map<long, pair<Image, Satelite> > *, map<Image, vector<Satelite> >);
 	~DataPrepWork();
 
 	// Functions :
 	map<long, pair<Image, Satelite> > GetTimeLine();
+
+	// Getters and setters :
+	void setData(SimulationData);
+	SimulationData getData();
 };
