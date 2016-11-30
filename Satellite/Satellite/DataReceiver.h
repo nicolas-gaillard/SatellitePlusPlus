@@ -10,8 +10,8 @@ public:
 	DataReceiver(std::string filename);
 	~DataReceiver();
 	SimulationData extractData();
-	Satelite * extractSatelite(SimulationData Sd);
-	Collection * extractCollection(SimulationData Sd);
+	Satelite * extractSatelite(SimulationData * Sd);
+	Collection * extractCollection(SimulationData * Sd);
 	Image * extractImage(int nb);
 	TimeStamp * extractTimeStamp(int nb);
 

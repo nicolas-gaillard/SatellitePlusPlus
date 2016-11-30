@@ -28,15 +28,15 @@ SimulationData DataReceiver::extractData() {
 	// duration of the simulation
 	getline(*infile, line);
 	tmpData.setDuration(atoi(line.c_str()));
-	tmpData.setArraySat(this->extractSatelite(tmpData));
-	tmpData.setArrayCol(this->extractCollection(tmpData));
+	tmpData.setArraySat(this->extractSatelite(&tmpData));
+	tmpData.setArrayCol(this->extractCollection(&tmpData));
 
 	
 	return tmpData;
 
 }
 
-Satelite *  DataReceiver::extractSatelite(SimulationData Sd) {
+Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
 
 	std::string line;
 	std::vector<std::string> elems;
@@ -44,7 +44,7 @@ Satelite *  DataReceiver::extractSatelite(SimulationData Sd) {
 	// total of satelites lines
 	getline(*infile, line);
 	const int nb = atoi(line.c_str());
-	Sd.setNbSatelite(nb);
+	Sd->setNbSatelite(nb);
 	Satelite * arraySatelite = new Satelite[nb];
 	Satelite * tmp;
 
@@ -64,12 +64,14 @@ Satelite *  DataReceiver::extractSatelite(SimulationData Sd) {
 	}
 	
 
+	Sd->setArraySat(arraySatelite);
+
 	return arraySatelite;
 
 }
 
 
-Collection *  DataReceiver::extractCollection(SimulationData Sd) {
+Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 
 	std::string line;
 	std::vector<std::string> elems;
@@ -77,7 +79,7 @@ Collection *  DataReceiver::extractCollection(SimulationData Sd) {
 	// total of Collections 
 	getline(*infile, line);
 	const int nb = atoi(line.c_str());
-	Sd.setNbCollection(nb);
+	Sd->setNbCollection(nb);
 	Collection * arrayCollection = new Collection[nb];
 	Collection * tmp;
 
