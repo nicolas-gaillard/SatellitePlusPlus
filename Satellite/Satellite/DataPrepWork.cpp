@@ -4,35 +4,33 @@ DataPrepWork::DataPrepWork() {
 	data = new SimulationData();
 }
 
+
 DataPrepWork::DataPrepWork(SimulationData *d, map<long, pair<Image, Satelite> > * m1, map<Image, vector<Satelite> > m2) {
 	data = d;
 	timeline = m1;
 	matchingMap = m2;
 }
 
-DataPrepWork::~DataPrepWork(){
 
-}
+DataPrepWork::~DataPrepWork(){}
 
 void DataPrepWork::setData(SimulationData *d) {
 	data = d;
 }
-
 
 SimulationData* DataPrepWork::getData() {
 	return data;
 }
 
 map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
+	
+	// Key = Simulation's turn
 	map<long, pair<Image, Satelite> > result;
 
-	// Numbers of image which can potientally be taken during this simulation
-	long count = 0;
-
-	// Running the simulation
+	// Running the simulation :
 	for (int t = 0; t < getData()->getDuration(); t++)
 	{
-		// For each satellite
+		// For each satellite :
 		for (int s = 0; s < getData()->getNbSatelite(); s++)
 		{
 			// Changing satellite's position :
@@ -40,17 +38,20 @@ map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
 			// We suppose that each lattiude/longitude are already in seconds (")
 			long sumLaSpeed = getData()->getArraySat()[s].la + (long)getData()->getArraySat()[s].speed;
 
+			// First case, the easiest :
 			if ( (-324000 <= sumLaSpeed) and (sumLaSpeed <= 324000)){
 				getData()->getArraySat()[s].la = sumLaSpeed;
 				getData()->getArraySat()[s].lo -= 15;
 			}
 
+			// Second case : the satellite has reached the North Pole 
 			else if (sumLaSpeed > 324000){
 				getData()->getArraySat()[s].la = 648000 - (sumLaSpeed);
 				getData()->getArraySat()[s].lo = -648000 + (getData()->getArraySat()[s].lo - 15);
 				getData()->getArraySat()[s].speed *= (-1);
 			}
 
+			// Last case : the satellite has reached the South Pole 
 			else {
 				getData()->getArraySat()[s].la = -648000 - (sumLaSpeed);
 				getData()->getArraySat()[s].lo = -648000 + (getData()->getArraySat()[s].lo + 15);
@@ -76,17 +77,14 @@ map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
 						if (((imgLa >= satLa - satDelta) and (imgLa <= satLa + satDelta)) 
 							and ((imgLo >= satLo - satDelta) and (imgLo <= satLo + satDelta))){
 
-							result[count++] = make_pair(getData()->getArrayCol()[c].listImg[i] , getData()->getArraySat()[s]);
+							// We add this image to the map 
+							result[t] = make_pair(getData()->getArrayCol()[c].listImg[i] , getData()->getArraySat()[s]);
 						}
-					}
-					
+					}		
 				}
 			}
-
-			
 		}
 	}
-	
 
 	return result;
 }
