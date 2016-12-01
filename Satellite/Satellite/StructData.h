@@ -17,7 +17,6 @@ struct Image
 {
 	long la;
 	long lo;
-
 };
 
 struct TimeStamp {
