@@ -39,7 +39,7 @@ map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
 			long sumLaSpeed = getData()->getArraySat()[s].la + (long)getData()->getArraySat()[s].speed;
 
 			// First case, the easiest :
-			if ( (-324000 <= sumLaSpeed) and (sumLaSpeed <= 324000)){
+			if ( (-324000 <= sumLaSpeed) && (sumLaSpeed <= 324000)){
 				getData()->getArraySat()[s].la = sumLaSpeed;
 				getData()->getArraySat()[s].lo -= 15;
 			}
@@ -74,8 +74,8 @@ map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
 						long satLo = getData()->getArraySat()[s].lo;
 						long satDelta = (long)getData()->getArraySat()[s].maxRot;
 						
-						if (((imgLa >= satLa - satDelta) and (imgLa <= satLa + satDelta)) 
-							and ((imgLo >= satLo - satDelta) and (imgLo <= satLo + satDelta))){
+						if (((imgLa >= satLa - satDelta) && (imgLa <= satLa + satDelta)) 
+							&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))){
 
 							// We add this image to the map 
 							result[t] = make_pair(getData()->getArrayCol()[c].listImg[i] , getData()->getArraySat()[s]);
