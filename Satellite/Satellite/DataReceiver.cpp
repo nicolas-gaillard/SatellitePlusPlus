@@ -11,7 +11,8 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 		elems.push_back(item);
 	}
 }
-
+DataReceiver::~DataReceiver(){
+}
 
 DataReceiver::DataReceiver(std::string filename)
 {

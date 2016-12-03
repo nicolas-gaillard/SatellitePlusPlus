@@ -110,11 +110,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataPrepWork.cpp" />
     <ClCompile Include="DataReceiver.cpp" />
     <ClCompile Include="SimulationData.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataPrepWork.h" />
     <ClInclude Include="DataReceiver.h" />
     <ClInclude Include="SimulationData.h" />
     <ClInclude Include="StructData.h" />

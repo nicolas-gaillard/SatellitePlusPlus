@@ -5,12 +5,18 @@ DataPrepWork::DataPrepWork() {
 }
 
 
-DataPrepWork::DataPrepWork(SimulationData *d, map<long, pair<Image, Satelite> > * m1, map<Image, vector<Satelite> > m2) {
+DataPrepWork::DataPrepWork(SimulationData *d, vector <pair<Image, Satelite>> m1, map<Image, vector<Satelite> > m2) {
 	data = d;
 	timeline = m1;
 	matchingMap = m2;
 }
 
+
+ DataPrepWork::DataPrepWork(SimulationData *d) {
+	data = d;
+	timeline = vector<pair<Image, Satelite>>();
+	matchingMap = map<Image, vector<Satelite> >();
+}
 
 DataPrepWork::~DataPrepWork(){}
 
@@ -22,10 +28,10 @@ SimulationData* DataPrepWork::getData() {
 	return data;
 }
 
-map<long, pair<Image, Satelite> > DataPrepWork::GetTimeLine() {
+vector <pair<Image, Satelite>> DataPrepWork::GetTimeLine() {
 	
 	// Key = Simulation's turn
-	map<long, pair<Image, Satelite> > result;
+	vector <pair<Image, Satelite>> result;
 
 	// Running the simulation :
 	for (int t = 0; t < getData()->getDuration(); t++)
