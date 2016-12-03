@@ -1,11 +1,13 @@
 #include "DataPrepWork.h"
+#include <numeric>
+#include <chrono>
 
 DataPrepWork::DataPrepWork() {
 	data = new SimulationData();
 }
 
 
-DataPrepWork::DataPrepWork(SimulationData *d, vector <pair<Image, Satelite>> m1, map<Image, vector<Satelite> > m2) {
+DataPrepWork::DataPrepWork(SimulationData *d, vector <vector<pair<Image, Satelite>>> m1, map<Image, vector<Satelite> > m2) {
 	data = d;
 	timeline = m1;
 	matchingMap = m2;
@@ -14,7 +16,7 @@ DataPrepWork::DataPrepWork(SimulationData *d, vector <pair<Image, Satelite>> m1,
 
  DataPrepWork::DataPrepWork(SimulationData *d) {
 	data = d;
-	timeline = vector<pair<Image, Satelite>>();
+	timeline = vector<vector<pair<Image, Satelite>>>();
 	matchingMap = map<Image, vector<Satelite> >();
 }
 
@@ -28,14 +30,21 @@ SimulationData* DataPrepWork::getData() {
 	return data;
 }
 
-vector <pair<Image, Satelite>> DataPrepWork::GetTimeLine() {
+vector <vector<pair<Image, Satelite>>> DataPrepWork::GetTimeLine() {
 	
-	// Key = Simulation's turn
-	vector <pair<Image, Satelite>> result;
+	auto start = std::chrono::high_resolution_clock::now();
 
+	int averageSatPerImage;
+	int averageImagePerSatelite;
+	// Key = Simulation's turn
+	//cout << getData()->getNbSatelite() << " " << getData()->getNbCollection() << endl;
 	// Running the simulation :
+	
 	for (int t = 0; t < getData()->getDuration(); t++)
 	{
+		if (t % 1000 == 0)
+			cout << t << endl;
+		timeline.push_back(vector<pair<Image, Satelite>>());
 		// For each satellite :
 		for (int s = 0; s < getData()->getNbSatelite(); s++)
 		{
@@ -84,13 +93,15 @@ vector <pair<Image, Satelite>> DataPrepWork::GetTimeLine() {
 							&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))){
 
 							// We add this image to the map 
-							result[t] = make_pair(getData()->getArrayCol()[c].listImg[i] , getData()->getArraySat()[s]);
+							//cout << " satelite " << s << " collide with  image  " << i << " time " << t << endl;
+							timeline[t].push_back (make_pair(getData()->getArrayCol()[c].listImg[i] , getData()->getArraySat()[s]));
 						}
 					}		
 				}
 			}
 		}
 	}
-
-	return result;
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff = end - start;
+	return timeline;
 }
