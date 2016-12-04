@@ -15,6 +15,7 @@ private :
 	SimulationData *data;
 	vector <vector<pair<Image, Satelite>>> timeline;
 	map<Image, vector<Satelite> > matchingMap; 
+	void prepWorkThread(int i,int n);
 
 public :
 	// Constructors and destructor : 

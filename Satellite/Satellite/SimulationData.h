@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StructData.h"
+#include  <vector>
 
 class SimulationData
 {
@@ -15,6 +16,8 @@ public:
 	inline long getNbSatelite() { return nbSatelite; };
 	inline Satelite * getArraySat() { return arraySat; };
 	inline Collection * getArrayCol() { return arrayCol; };
+	inline std::vector<Image> getListIntegral() { return listIntegral; };
+	void pushback(Image im);
 
 	inline void setNbCollection(int nb) { this->nbCollection = nb; };
 	inline void setDuration(long d) { this->duration = d; };
@@ -28,5 +31,7 @@ private :
 	int nbCollection;
 	Satelite * arraySat;
 	Collection * arrayCol;
+	std::vector<Image> listIntegral;
+	
 };
 

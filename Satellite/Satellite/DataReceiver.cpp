@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include <iostream>
+
 void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	std::stringstream ss;
 	ss.str(s);
@@ -72,7 +73,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->nbPts = atoi(elems[0].c_str());
 		tmp->nbImg = atoi(elems[1].c_str());
 		tmp->nbTimeSt = atoi(elems[2].c_str());
-		tmp->listImg = this->extractImage(tmp->nbImg);
+		tmp->listImg = this->extractImage(Sd,tmp->nbImg);
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";
 		arrayCollection[i] = *tmp;
@@ -80,7 +81,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 	}
 	return arrayCollection;
 }
-Image *  DataReceiver::extractImage(int nb) {
+Image *  DataReceiver::extractImage(SimulationData * Sd,int nb) {
 	std::string line;
 	std::vector<std::string> elems;
 	// total of Images per collection
@@ -96,7 +97,10 @@ Image *  DataReceiver::extractImage(int nb) {
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
 		arrayImage[i] = *tmp;
+		Sd->pushback(*tmp);
+		//std::cout << "size " << Sd->getListIntegral().size() << std::endl;
 		elems.clear();
+
 	}
 	return arrayImage;
 }

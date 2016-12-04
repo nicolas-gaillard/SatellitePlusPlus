@@ -12,7 +12,7 @@ public:
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
 	Collection * extractCollection(SimulationData * Sd);
-	Image * extractImage(int nb);
+	Image * extractImage(SimulationData * Sd,int nb);
 	TimeStamp * extractTimeStamp(int nb);
 
 private:

@@ -17,15 +17,7 @@ struct Image
 {
 	long la;
 	long lo;
-
-	// Test :
-	/*
-	bool operator< (const Image& img) const
-    {
-        return (this->la < img.la && this->lo < img.lo);
-    }
-    */
-
+	int nbsat;
 };
 
 struct TimeStamp {
