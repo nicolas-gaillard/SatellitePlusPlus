@@ -1,8 +1,6 @@
 #include "Judge.h"
 #include "TimeMeasure.h"
-#include <iostream>
 #include <ctime>
-#include <chrono> 
 #include <time.h>		// time() == real time, clock() == processing time
 
 typedef std::chrono::high_resolution_clock Clock;
@@ -40,7 +38,11 @@ int main(int argc, char *argv[]) {
 	auto before = std::chrono::high_resolution_clock::now();
     sleep(5);
     auto after = std::chrono::high_resolution_clock::now();
+	auto result = std::chrono::duration_cast<std::chrono::milliseconds>(after-before).count();
+	std::cout << typeid(result).name() << std::endl;
+	std::cout << (long)result << std::endl;
+	std::cout << (double)result << std::endl;
     std::cout << "chrono 2 : "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(after-before).count()
-              << " milliseconds\n";
+              << result
+              << " milliseconds" << std::endl;
 }

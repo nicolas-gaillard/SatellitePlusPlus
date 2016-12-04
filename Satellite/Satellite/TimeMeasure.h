@@ -2,10 +2,11 @@
 #include <string>
 #include <fstream>
 #include <map>
-#include <utility>
+#include <utility>			// pair
 #include <cstdlib>			// rand()
 #include <unistd.h>			// usleep(microsecs), sleep(seconds)
-// #include <stdlib.h>			// rand()
+#include <chrono>			// time measures
+#include <iostream>
 
 class TimeMeasure{
 
