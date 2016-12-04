@@ -3,6 +3,9 @@
 #include <fstream>
 #include <map>
 #include <utility>
+#include <cstdlib>			// rand()
+#include <unistd.h>			// usleep(microsecs), sleep(seconds)
+// #include <stdlib.h>			// rand()
 
 class TimeMeasure{
 

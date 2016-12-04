@@ -1,21 +1,46 @@
 #include "Judge.h"
 #include "TimeMeasure.h"
 #include <iostream>
+#include <ctime>
+#include <chrono> 
+#include <time.h>		// time() == real time, clock() == processing time
 
-int main() {
-	/*
-	std::cout << "[I] Start of Judge reading..." << std::endl;
-	Judge * data_j = new Judge("text/example.out");
-	bool result = data_j->isValidSyntax(3, 50, 2);
-	std::cout << "[I] Data reading complete." << std::endl;
-	std::cout << "[I] Result : " << std::endl;
-	std::string result_string;
-	result ? result_string = "[I] Test succesfull." : result_string = "[E] Test failed.";
-	std::cout << result_string << std::endl;
-	system("pause");
-	*/
+typedef std::chrono::high_resolution_clock Clock;
 
-	std::cout << "Test du test de la mort " << std::endl;
+int main(int argc, char *argv[]) {
+	std::cout << "[I] Measuring execution time test" << std::endl << std::endl;
+	
+	// Get a number between 1 and 30 :
+    // int timeBreak = rand() % 30 + 1;
 
+	std::cout << "Test 1 : ctime" << std::endl;
+	std::clock_t start = std::clock();
+	sleep(5);
+	double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+	std::cout << "Duration : " << duration << " seconds" << std::endl << std::endl;
+
+
+	std::cout << "Test 2 : <chrono> nanosec" << std::endl;
+	auto t1 = std::chrono::high_resolution_clock::now();;
+    sleep(5);
+	auto t2 = std::chrono::high_resolution_clock::now();
+    std::cout << "Duration : " << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+              << " nanoseconds" << std::endl << std::endl;
+
+
+	std::cout << "Test 3 : clock()" << std::endl;
+	clock_t begin = clock();
+	sleep(5);
+	clock_t end = clock();
+	double time = (double) (end-begin) / CLOCKS_PER_SEC * 1000.0;
+	std::cout << "Duration : " << time << std::endl << std::endl;
+
+
+	std::cout << "Test 4 : <chrono> ms" << std::endl;
+	auto before = std::chrono::high_resolution_clock::now();
+    sleep(5);
+    auto after = std::chrono::high_resolution_clock::now();
+    std::cout << "chrono 2 : "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(after-before).count()
+              << " milliseconds\n";
 }
-
