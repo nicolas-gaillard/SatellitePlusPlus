@@ -8,10 +8,10 @@ class TimeMeasure{
 
 private:
 
-	std::string inputFolder;	// Folder which contains all executables				
+	std::string inputFolder;		// Folder which contains all executables				
 	std::ifstream * nameOutput;		// File which will display results
 	std::map<int, std::pair<long, long> > resultTabs;
-	std::ifstream * inputData;	// File which contains data of 1 simulation
+	std::string inputData;		// File which contains data of 1 simulation
 
 public:
 	// Constructors and destructor :
@@ -26,7 +26,7 @@ public:
 	long measureExec(std::string pathExecutable, std::string outputExec);
 
 	// Launch each executable :
-	bool ExecuteFolder();
+	bool executeFolder();
 
 	// Create the file where all the results are displayed :
 	bool createResults();
