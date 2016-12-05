@@ -34,9 +34,10 @@ SimulationData* DataPrepWork::getData() {
 void DataPrepWork::prepWorkThread(int i,int n) {
 	Satelite sat;
 	vector<Image> vect = getData()->getListIntegral();
-	auto start = std::chrono::high_resolution_clock::now();
 	for (size_t x = i; x < this->data->getNbSatelite(); x=x+n)
 	{
+		auto start = std::chrono::high_resolution_clock::now();
+
 		//cout << " satelite  " << x << " thread no " << i << "/"<<n <<endl;
 		sat = this->data->getArraySat()[x];
 		for (int t = 0; t < getData()->getDuration(); t++)
@@ -66,11 +67,29 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 			if (sat.la >= -306000 && sat.la <= 306000) {
 				//cout << getData()->getListIntegral().size() << endl;
 				// Checking all the collection 
+				
 				for (int c = 0; c < getData()->getListIntegral().size(); c++)
 				{
 
-					/*
-					// For each image : we check if the image is in the range of the satellite
+
+					long imgLa = vect[c].la;
+					long imgLo = vect[c].lo;
+					long satLa = sat.la;
+					long satLo = sat.lo;
+					long satDelta = (long)sat.maxRot;
+					if (((imgLa >= satLa - satDelta) && (imgLa <= satLa + satDelta))
+						&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))) {
+						// We add this image to the map 
+						//cout << " satelite " << s << " collide with  image  " << i << " time " << t << endl;
+						timeline[t].push_back(make_pair(vect[c], sat));
+					}
+
+
+				}
+				
+				/*
+				for (size_t c = 0; c < data->getNbCollection(); c++)
+				{
 					for (int i = 0; i < getData()->getArrayCol()[c].nbImg; i++)
 					{
 						long imgLa = getData()->getArrayCol()[c].listImg[i].la;
@@ -78,31 +97,31 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 						long satLa = sat.la;
 						long satLo = sat.lo;
 						long satDelta = (long)sat.maxRot;
-							*/
-						long imgLa = vect[c].la;
-						long imgLo = vect[c].lo;
-						long satLa = sat.la;
-						long satLo = sat.lo;
-						long satDelta = (long)sat.maxRot;
 						if (((imgLa >= satLa - satDelta) && (imgLa <= satLa + satDelta))
 							&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))) {
-							// We add this image to the map 
+							// We add this image to the map
 							//cout << " satelite " << s << " collide with  image  " << i << " time " << t << endl;
 							timeline[t].push_back(make_pair(vect[c], sat));
 						}
-						
-					
+
+					}
+
 				}
+				*/
+				// For each image : we check if the image is in the range of the satellite
+				
+
 			}
 
 
 		}
+		auto end = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> diff = end - start;
+		std::cout << "Temps pour trier les mots " << diff.count() << " s\n";
 
 	}
 	
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> diff = end - start;
-	std::cout << "Temps pour trier les mots " << diff.count() << " s\n";
+	
 
 
 }
