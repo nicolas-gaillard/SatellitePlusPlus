@@ -1,15 +1,33 @@
-#include "Judge.h"
+#include "DataReceiver.h"
+#include "NaiveResolver.h"
 #include <iostream>
+#include <string>
 
 int main() {
-	std::cout << "[I] Start of Judge reading..." << std::endl;
-	Judge * data_j = new Judge("text/example.out");
-	bool result = data_j->isValidSyntax(3, 50, 2);
-	std::cout << "[I] Data reading complete." << std::endl;
-	std::cout << "[I] Result : " << std::endl;
-	std::string result_string;
-	result ? result_string = "[I] Test succesfull." : result_string = "[E] Test failed.";
-	std::cout << result_string << std::endl;
+
+	std::string filename = "text/forever_alone.in";
+	std::string outfilename = "text/forever_alone.out";
+
+	std::cout << "================================" << std::endl;
+	std::cout << "\tSATELLITE PLUS PLUS" << std::endl;
+	std::cout << "================================" << std::endl;
+	std::cout << "[I] Starting naive resolution..." << std::endl;
+
+	std::cout << "[I] Reading data from  '" << filename << "'... " << std::endl;
+	DataReceiver * dataReceiver = new DataReceiver(filename);
+	SimulationData * simData = &dataReceiver->extractData();
+
+	if (simData->getNbSatelite() == 0)
+		std::cout << "[E] Error on reading file : No such file." << std::endl;
+	
+	std::cout << "[S] Success." << std::endl;
+
+	NaiveResolver * naive = new NaiveResolver(simData, outfilename);
+
+	naive->launchResolution();
+
 	system("pause");
+
+	
 }
 

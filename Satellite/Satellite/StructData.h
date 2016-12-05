@@ -2,6 +2,11 @@
 #include <string>
 
 
+struct Image
+{
+	long la;
+	long lo;
+};
 
 struct Satelite
 {
@@ -10,14 +15,8 @@ struct Satelite
 	int speed;
 	int speedRot;
 	int maxRot;
-};
-
-
-struct Image
-{
-	long la;
-	long lo;
-
+	Image * lastShotRelativePosition;
+	int lastShotTurn;
 };
 
 struct TimeStamp {
