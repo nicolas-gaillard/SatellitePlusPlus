@@ -31,6 +31,7 @@ public:
 
 	// Launch each executable :
 	bool executeFolder();
+	// search : browse directory cpp/c++
 
 	// Create the file where all the results are displayed :
 	bool createResults();

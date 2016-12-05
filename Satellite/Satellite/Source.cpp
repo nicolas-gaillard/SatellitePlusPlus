@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     auto after = std::chrono::high_resolution_clock::now();
 	auto result = std::chrono::duration_cast<std::chrono::milliseconds>(after-before).count();
 	std::cout << typeid(result).name() << std::endl;
-	std::cout << (long)result << std::endl;
-	std::cout << (double)result << std::endl;
+	std::cout << static_cast<long>(result) << std::endl;
+	std::cout << static_cast<double>(result) << std::endl;
     std::cout << "chrono 2 : "
               << result
               << " milliseconds" << std::endl;

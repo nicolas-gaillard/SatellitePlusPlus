@@ -35,5 +35,5 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
               << execTime \
               << " milliseconds" << std::endl;
 
-    return (long)execTime;
+    return static_cast<long>(execTime);
 }
