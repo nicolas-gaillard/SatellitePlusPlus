@@ -38,7 +38,6 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 	{
 		auto start = std::chrono::high_resolution_clock::now();
 
-		//cout << " satelite  " << x << " thread no " << i << "/"<<n <<endl;
 		sat = this->data->getArraySat()[x];
 		for (int t = 0; t < getData()->getDuration(); t++)
 		{
@@ -67,7 +66,7 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 			if (sat.la >= -306000 && sat.la <= 306000) {
 				//cout << getData()->getListIntegral().size() << endl;
 				// Checking all the collection 
-				
+				/*
 				for (int c = 0; c < getData()->getListIntegral().size(); c++)
 				{
 
@@ -86,8 +85,8 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 
 
 				}
+				*/
 				
-				/*
 				for (size_t c = 0; c < data->getNbCollection(); c++)
 				{
 					for (int i = 0; i < getData()->getArrayCol()[c].nbImg; i++)
@@ -101,13 +100,13 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 							&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))) {
 							// We add this image to the map
 							//cout << " satelite " << s << " collide with  image  " << i << " time " << t << endl;
-							timeline[t].push_back(make_pair(vect[c], sat));
+							timeline[t].push_back(make_pair(getData()->getArrayCol()[c].listImg[i], sat));
 						}
 
 					}
 
 				}
-				*/
+				
 				// For each image : we check if the image is in the range of the satellite
 				
 
@@ -117,7 +116,7 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 		}
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> diff = end - start;
-		std::cout << "Temps pour trier les mots " << diff.count() << " s\n";
+		std::cout << " satelite  " << x << " thread no " << i << "/" << n << "  Temps pour trier les mots " << diff.count() << " s\n";
 
 	}
 	
@@ -132,7 +131,7 @@ vector <vector<pair<Image, Satelite>>> DataPrepWork::GetTimeLine() {
 	thread *t = new thread[data->getNbSatelite()];
 	int nbsatelite = getData()->getNbSatelite();
 	DataPrepWork * th = this;
-	int tmp = 1;
+	int tmp = 4;
 	int averageSatPerImage;
 	int averageImagePerSatelite;
 	// Key = Simulation's turn
@@ -143,22 +142,20 @@ vector <vector<pair<Image, Satelite>>> DataPrepWork::GetTimeLine() {
 		timeline.push_back(vector<pair<Image, Satelite>>());
 
 	}
-	for (int s = 0; s < nbsatelite; s++)
+	
+		
+	for (int i = 0; i < tmp; i++) {
+		Satelite sat = data->getArraySat()[i];
+		t[i] = thread([&th,i,tmp ]() { th->prepWorkThread(i,tmp); });
+	}
+	for (size_t i = 0; i < tmp; i++)
 	{
-		// Changing satellite's position :
+		t[i].join();
+
+	}
 
 		
-		for (int i = 0; i < tmp; i++) {
-			Satelite sat = data->getArraySat()[i];
-			t[i] = thread([&th,i,tmp ]() { th->prepWorkThread(i,tmp); });
-		}
-
-		for (int i = 0; i < tmp; i++) {
-			t[i].join();
-		}
-		// We suppose that each lattiude/longitude are already in seconds (")
-		//cout << "all gucci " << endl;
-	}
+	
 
 	
 	return timeline;
