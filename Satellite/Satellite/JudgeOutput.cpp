@@ -25,11 +25,29 @@ bool JudgeOutput::isValidOutput() {
 */
 bool JudgeOutput::isValidFormat() {
     // CHECK THE SYNTAX : regex
+    // First line : only a digit (number of pictures taken)
     std::regex first_line("[[:digit:]]+");
-    std::regex line_regex("-?([[:digit:]]+[[:space:]]){2}+?([[:digit:]]+[[:space:]]){2}");
-    
-    std::cout << regex_match("175958 8387 12 1", line_regex) << std::endl;
-    return false;
+    // The other lines : image i taken by satellite s at turn t
+    std::regex line_regex("(-?[[:digit:]]+[[:space:]]){2}([[:digit:]]+[[:space:]])[[:digit:]]+");
+
+    // Get of the first line
+	std::string line;
+	std::getline(*outputFile, line);
+
+    // Check the first line
+    if (!regex_match(line, first_line)) {
+        std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+        return false;
+    }
+
+    // Check the other lines
+    while (std::getline(*outputFile, line)) {
+        if (!regex_match(line, line_regex)) {
+            std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+            return false;
+        }
+    }
+    return true;
 }
 
 /*
