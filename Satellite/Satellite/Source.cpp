@@ -15,7 +15,8 @@ int main() {
 
 	std::cout << "[I] Reading data from  '" << filename << "'... " << std::endl;
 	DataReceiver * dataReceiver = new DataReceiver(filename);
-	SimulationData * simData = &dataReceiver->extractData();
+    SimulationData d=dataReceiver->extractData();
+	SimulationData * simData = &d;
 
 	if (simData->getNbSatelite() == 0)
 		std::cout << "[E] Error on reading file : No such file." << std::endl;
