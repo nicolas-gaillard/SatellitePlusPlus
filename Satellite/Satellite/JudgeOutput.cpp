@@ -66,16 +66,32 @@ bool JudgeOutput::isValidImage(Image img, Satelite sat) {
 }
 
 
+
 /*
  * Get the score of the simulation 
  * Return the score
 */
-int getScore(Collection * arrayCol) {
-    /* Récuperer les collections dans des objets
-    * Récuperer toutes les photos prises par les satellites 
-    * 
-    */
+int JudgeOutput::getScore(Collection * arrayCol) {
+    int score = 0;
+    // VOIR POUR LA STRUCTURE QUI RECUPERE QUELLE IMAGE A ÉTÉ PRISE PAR QUELLE(S) SATELLITE(S)
 
+    // Parcours du tableau
+    int numCol = 0;
+    int numImg = 0;
+    Collection col = arrayCol[numCol];;
+    while (col.nbImg != 0) { 
+        
+        std::cout << col.nbImg << std::endl;
+        for (numImg = 0; numImg <= col.nbImg; numImg++) {
+            std::cout << "Col " << numCol << ", img " << numImg << " : " << col.listImg[numImg].la << " " << col.listImg[numImg].lo << std::endl;
+        }
+        numCol++;
+        col = arrayCol[numCol];
+        if (col.nbImg == 0) {
+            std::cout << "mdrrr" << std::endl;
+            break;
+        }
+    }
 
-    return 0;
+    return score;
 }
