@@ -24,7 +24,7 @@ int main() {
 
 	NaiveResolver * naive = new NaiveResolver(simData, outfilename);
 
-	naive->launchResolution();
+	naive->launchResolution(false);
 
 	system("pause");
 

@@ -10,7 +10,7 @@ public:
 	NaiveResolver(SimulationData * simData, std::string filename);
 	~NaiveResolver();
 
-	void launchResolution();
+	void launchResolution(bool verbose = true);
 
 private:
 
