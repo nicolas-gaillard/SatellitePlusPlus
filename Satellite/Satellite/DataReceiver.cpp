@@ -96,6 +96,7 @@ Image *  DataReceiver::extractImage(SimulationData * Sd,int nb) {
 		//std::cout << line << std::endl;
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
+		tmp->nbsat = 0;
 		arrayImage[i] = *tmp;
 		Sd->pushback(*tmp);
 		//std::cout << "size " << Sd->getListIntegral().size() << std::endl;

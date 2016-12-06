@@ -8,7 +8,7 @@ DataPrepWork::DataPrepWork() {
 }
 
 
-DataPrepWork::DataPrepWork(SimulationData *d, vector <vector<pair<Image, Satelite>>> m1, map<Image, vector<Satelite> > m2) {
+DataPrepWork::DataPrepWork(SimulationData *d, vector <vector<pair<Image*, Satelite>>> m1, map<Image, vector<Satelite> > m2) {
 	data = d;
 	timeline = m1;
 	matchingMap = m2;
@@ -17,7 +17,7 @@ DataPrepWork::DataPrepWork(SimulationData *d, vector <vector<pair<Image, Satelit
 
  DataPrepWork::DataPrepWork(SimulationData *d) {
 	data = d;
-	timeline = vector<vector<pair<Image, Satelite>>>();
+	timeline = vector<vector<pair<Image*, Satelite>>>();
 	matchingMap = map<Image, vector<Satelite> >();
 }
 
@@ -100,7 +100,9 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 							&& ((imgLo >= satLo - satDelta) && (imgLo <= satLo + satDelta))) {
 							// We add this image to the map
 							//cout << " satelite " << s << " collide with  image  " << i << " time " << t << endl;
-							timeline[t].push_back(make_pair(getData()->getArrayCol()[c].listImg[i], sat));
+							getData()->getArrayCol()[c].listImg[i].nbsat++;
+							timeline[t].push_back(make_pair(&getData()->getArrayCol()[c].listImg[i], sat));
+
 						}
 
 					}
@@ -126,20 +128,21 @@ void DataPrepWork::prepWorkThread(int i,int n) {
 }
 
 
-vector <vector<pair<Image, Satelite>>> DataPrepWork::GetTimeLine() {
+vector <vector<pair<Image*, Satelite>>> DataPrepWork::GetTimeLine() {
 	
 	thread *t = new thread[data->getNbSatelite()];
 	int nbsatelite = getData()->getNbSatelite();
 	DataPrepWork * th = this;
 	int tmp = 4;
-	int averageSatPerImage;
-	int averageImagePerSatelite;
+	int cptzero = 0;
+	int cptmoyenne = 0;
+	int cptimage = 0;
 	// Key = Simulation's turn
 	// Running the simulation :
 
 	for (int t = 0; t < getData()->getDuration(); t++)
 	{
-		timeline.push_back(vector<pair<Image, Satelite>>());
+		timeline.push_back(vector<pair<Image*, Satelite>>());
 
 	}
 	
@@ -151,11 +154,23 @@ vector <vector<pair<Image, Satelite>>> DataPrepWork::GetTimeLine() {
 	for (size_t i = 0; i < tmp; i++)
 	{
 		t[i].join();
-
 	}
-
+	for (size_t i = 0; i < data->getNbCollection(); i++)
+	{
+		Collection c = data->getArrayCol()[i];
+		for (size_t j = 0; j < c.nbImg; j++)
+		{
+			if (c.listImg[j].nbsat == 0)
+				cptzero++;
+			//cout << "image " << j << " collection " << i << " can be removed" << endl;
+			cptmoyenne += c.listImg[j].nbsat;
+				
+		}
+		cptimage += c.nbImg;
+	}
 		
-	
+	cout << " nb image with 0 satelite " << cptzero << " nb average satperimage " << cptmoyenne / cptimage;
+
 
 	
 	return timeline;
