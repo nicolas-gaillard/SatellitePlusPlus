@@ -33,7 +33,7 @@ SimulationData DataReceiver::extractData() {
 
 }
 
-Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
+Satelite * DataReceiver::extractSatelite(SimulationData * Sd) {
 
 	std::string line;
 	std::vector<std::string> elems;

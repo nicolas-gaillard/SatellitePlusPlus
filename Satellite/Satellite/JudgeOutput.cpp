@@ -1,4 +1,6 @@
 #include "JudgeOutput.h"
+#include "DataReceiver.h"
+#include "SimulationData.h"
 #include <iostream>
 #include <regex>
 
@@ -7,16 +9,19 @@
  * Contructor 
  * filename : path of the output file
 */
-JudgeOutput::JudgeOutput(std::string filename) {
-    outputFile = new std::ifstream(filename);
+JudgeOutput::JudgeOutput(std::string outFileName) {
+    outputFile = new std::ifstream(outFileName);
 }
 
 /*
- * Check if the output file is valid 
+ * Check if the output file is valid :
+    * The format of the output file matches the description.
+    * Each picture is in range of the corresponding satellite when it’s taken.
+    * No satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
  * Return true if valid, false otherwise
 */
 bool JudgeOutput::isValidOutput() {
-    return false;
+    return isValidFormat();
 }
 
 /* 
@@ -55,6 +60,8 @@ bool JudgeOutput::isValidFormat() {
  * Return true if it was in range, false otherwise
 */
 bool JudgeOutput::isValidImage(Image img, Satelite sat) {
+    // À VOIR DEMAIN SUR LA RÉUNION
+    // Voir si la collection image -> satellite existe
     return false;
 }
 
@@ -63,6 +70,12 @@ bool JudgeOutput::isValidImage(Image img, Satelite sat) {
  * Get the score of the simulation 
  * Return the score
 */
-int getScore() {
+int getScore(Collection * arrayCol) {
+    /* Récuperer les collections dans des objets
+    * Récuperer toutes les photos prises par les satellites 
+    * 
+    */
+
+
     return 0;
 }

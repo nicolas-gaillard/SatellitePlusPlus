@@ -12,8 +12,9 @@ public:
 	bool isValidOutput();
     bool isValidFormat();
     bool isValidImage(Image img, Satelite sat);
-    int getScore();
+    int getScore(Collection * arrayCol);
 
 private:
 	std::ifstream * outputFile;
+    
 };
