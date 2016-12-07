@@ -8,6 +8,13 @@
 #include <chrono>			// time measures
 #include <iostream>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <vector>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 class TimeMeasure{
 
 private:
