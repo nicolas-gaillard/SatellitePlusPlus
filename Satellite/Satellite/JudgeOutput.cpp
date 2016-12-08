@@ -161,3 +161,27 @@ int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     }
     return score;
 }
+
+Satelite& getSatPosition(const Satelite &s,int turn)
+{
+    Satelite sat;
+    sat.maxRot=s.maxRot;
+    sat.speed=s.speed;
+    sat.speedRot=s.speedRot;
+ if((s.la+s.speed)>=-324000&&(s.la+s.speed)>=-324000)
+ {
+     sat.la=s.la+turn*s.speed;
+     sat.lo=s.lo-turn*15;
+ }
+    else if((s.la+s.speed)>324000)
+    {
+        sat.la=648000-(s.la+turn*s.speed);
+        sat.lo=s.lo-turn*15-648000;
+    }
+    else
+    {
+        sat.la=-648000-(s.la+turn*s.speed);
+        sat.lo=s.lo-turn*15-648000;
+    }
+    return sat;
+}
