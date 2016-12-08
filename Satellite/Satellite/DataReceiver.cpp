@@ -45,7 +45,6 @@ Satelite * DataReceiver::extractSatelite(SimulationData * Sd) {
 	Satelite * arraySatelite = new Satelite[nb];
 	Satelite * tmp;
 
-
 	for (size_t i = 0; i < nb; i++)
 	{
 		tmp = new Satelite();

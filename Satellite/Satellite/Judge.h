@@ -10,6 +10,8 @@ public:
 
 	bool isValidSyntax(int maxPictures, int maxTurns, int satNb);
 
+	//friend 
+
 private:
 	std::ifstream * inputFile;
 };

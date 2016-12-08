@@ -138,25 +138,25 @@ int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     for (numCol = 0; numCol < nbCol; numCol++) { 
         Collection col = arrayCol[numCol];
         colComplete = true;
-        std::cout << "Nb img : " << col.nbImg << std::endl;
+      //  std::cout << "Nb img : " << col.nbImg << std::endl;
         // Browse pictures of collection col
         for (numImg = 0; numImg < col.nbImg; numImg++) {
             img = col.listImg[numImg];
-            std::cout << "Col " << numCol << ", img " << numImg << " : " << img.la << " " << img.lo;
+           // std::cout << "Col " << numCol << ", img " << numImg << " : " << img.la << " " << img.lo;
            
             // Check if img was taken
             if (!contains(images, img)) {
                 colComplete = false;
-                std::cout << std::endl;
+                //std::cout << std::endl;
             }
             else  {
-                std::cout << " _/" << std::endl;
+               // std::cout << " _/" << std::endl;
             }
         }
         // If col complete : add the score of col
         if (colComplete) {
             score += col.nbPts;
-            std::cout << "Collection " << numCol << " complete" << std::endl;
+            //std::cout << "Collection " << numCol << " complete" << std::endl;
         }
     }
     return score;

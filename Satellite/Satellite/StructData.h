@@ -32,6 +32,5 @@ struct Collection
 	int nbTimeSt;
 	TimeStamp * listTimeSt;
 	Image * listImg;
-
 };
 
