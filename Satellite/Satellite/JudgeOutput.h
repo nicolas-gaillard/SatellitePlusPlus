@@ -1,7 +1,8 @@
 #pragma once
+#include "DataReceiver.h"
 #include <string>
 #include <fstream>
-#include "StructData.h"
+#include <vector>
 
 class JudgeOutput {
 
@@ -12,8 +13,9 @@ public:
 	bool isValidOutput();
     bool isValidFormat();
     bool isValidImage(Image img, Satelite sat);
-    int getScore(Collection * arrayCol);
-	
+    int getScore(Collection * arrayCol, long nbCol);
+	std::vector<Image> getImagesTaken();
+
 private:
 	std::ifstream * outputFile;
     

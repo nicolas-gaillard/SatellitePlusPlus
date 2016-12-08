@@ -1,9 +1,15 @@
 #include "JudgeOutput.h"
-#include "DataReceiver.h"
-#include "SimulationData.h"
 #include <iostream>
 #include <regex>
 
+void splitStr(const std::string &s, char delim, std::vector<std::string> &elems) {
+	std::stringstream ss;
+	ss.str(s);
+	std::string item;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+}
 
 /*
  * Contructor 
@@ -35,7 +41,7 @@ bool JudgeOutput::isValidFormat() {
     // The other lines : image i taken by satellite s at turn t
     std::regex line_regex("(-?[[:digit:]]+[[:space:]]){2}([[:digit:]]+[[:space:]])[[:digit:]]+");
 
-    // Get of the first line
+    // Get the first line
 	std::string line;
 	std::getline(*outputFile, line);
 
@@ -52,46 +58,95 @@ bool JudgeOutput::isValidFormat() {
             return false;
         }
     }
+    // Back to the beginning of the file
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
     return true;
 }
+
+
 
 /*
  * Check if the image img was in the range of the satelite sat 
  * Return true if it was in range, false otherwise
 */
 bool JudgeOutput::isValidImage(Image img, Satelite sat) {
-    // À VOIR DEMAIN SUR LA RÉUNION
-    // Voir si la collection image -> satellite existe
+    // attendre la fonction d'étienne de calcul de position, d'un satellite
+    // faire à partir du fichier de sortie
     return false;
 }
 
+/*
+ * Get all the images taken from the outputFile
+ * Return a vector of all the images
+*/
+std::vector<Image> JudgeOutput::getImagesTaken() {
+    std::vector<Image> imgs;
+    Image * img;
+    std::vector<std::string> elems;
+	std::string line;
 
+    // Get the first line : number of image taken
+	std::getline(*outputFile, line);
+	int nbImageTaken = std::stoi(line);
+
+    // Browse all the images 
+    for (int i = 0; i < nbImageTaken; i++) {
+        img = new Image();
+
+        std::getline(*outputFile, line);
+        splitStr(line, ' ', elems);
+
+        img->la = std::stoi(elems[0]);
+        img->lo = std::stoi(elems[1]);
+
+        imgs.push_back(*img);
+        elems.clear();
+    }
+    return imgs;
+}
 
 /*
  * Get the score of the simulation 
  * Return the score
 */
-int JudgeOutput::getScore(Collection * arrayCol) {
+int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     int score = 0;
-    // VOIR POUR LA STRUCTURE QUI RECUPERE QUELLE IMAGE A ÉTÉ PRISE PAR QUELLE(S) SATELLITE(S)
 
-    // Parcours du tableau
-    int numCol = 0;
-    int numImg = 0;
-    Collection col = arrayCol[numCol];;
-    while (col.nbImg != 0) { 
-        
-        std::cout << col.nbImg << std::endl;
-        for (numImg = 0; numImg <= col.nbImg; numImg++) {
-            std::cout << "Col " << numCol << ", img " << numImg << " : " << col.listImg[numImg].la << " " << col.listImg[numImg].lo << std::endl;
+    
+    int numCol;
+    int numImg;
+    bool colComplete;
+    Image img;
+
+    std::vector<Image> images = this->getImagesTaken();
+
+    //  Browse the collection array 
+    for (numCol = 0; numCol < nbCol; numCol++) { 
+        Collection col = arrayCol[numCol];
+        colComplete = true;
+      //  std::cout << "Nb img : " << col.nbImg << std::endl;
+        // Browse pictures of collection col
+        for (numImg = 0; numImg < col.nbImg; numImg++) {
+            img = col.listImg[numImg];
+            //std::cout << "Col " << numCol << ", img " << numImg << " : " << img.la << " " << img.lo;
+           
+            // Check if img was taken
+            
+            if (!map.contains(img)) {
+                colComplete = false;
+                std::cout << std::endl;
+            }
+            else  {
+                std::cout << " _/" << std::endl;
+            }
+            
         }
-        numCol++;
-        col = arrayCol[numCol];
-        if (col.nbImg == 0) {
-            std::cout << "mdrrr" << std::endl;
-            break;
+        // If col complete : add the score of col
+        if (colComplete) {
+            score += col.nbPts;
+           // std::cout << "Collection " << numCol << " complete" << std::endl;
         }
     }
-
     return score;
 }
