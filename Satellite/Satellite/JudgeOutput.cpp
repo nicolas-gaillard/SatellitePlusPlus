@@ -12,6 +12,20 @@ void splitStr(const std::string &s, char delim, std::vector<std::string> &elems)
 }
 
 /*
+ * Check if images contains img
+ * Return true if, false otherwise
+ */
+bool contains(std::vector<Image> &images, Image img) {
+    std::vector<Image>::iterator it;
+    for(it=images.begin() ; it < images.end(); it++) {
+        if (((*it).la == img.la)&&((*it).lo == img.lo)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
  * Contructor 
  * filename : path of the output file
 */
@@ -112,7 +126,6 @@ std::vector<Image> JudgeOutput::getImagesTaken() {
 */
 int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     int score = 0;
-
     
     int numCol;
     int numImg;
@@ -125,27 +138,25 @@ int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     for (numCol = 0; numCol < nbCol; numCol++) { 
         Collection col = arrayCol[numCol];
         colComplete = true;
-      //  std::cout << "Nb img : " << col.nbImg << std::endl;
+        std::cout << "Nb img : " << col.nbImg << std::endl;
         // Browse pictures of collection col
         for (numImg = 0; numImg < col.nbImg; numImg++) {
             img = col.listImg[numImg];
-            //std::cout << "Col " << numCol << ", img " << numImg << " : " << img.la << " " << img.lo;
+            std::cout << "Col " << numCol << ", img " << numImg << " : " << img.la << " " << img.lo;
            
             // Check if img was taken
-            
-            if (!map.contains(img)) {
+            if (!contains(images, img)) {
                 colComplete = false;
                 std::cout << std::endl;
             }
             else  {
                 std::cout << " _/" << std::endl;
             }
-            
         }
         // If col complete : add the score of col
         if (colComplete) {
             score += col.nbPts;
-           // std::cout << "Collection " << numCol << " complete" << std::endl;
+            std::cout << "Collection " << numCol << " complete" << std::endl;
         }
     }
     return score;
