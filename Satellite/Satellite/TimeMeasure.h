@@ -22,7 +22,7 @@ private:
 	std::string inputFolder;		// Folder which contains all executables				
 	std::ifstream * nameOutput;		// File which will display results
 	std::map<int, std::pair<long, long> > resultTabs;
-	std::string inputData;		// File which contains data of 1 simulation
+	std::string inputData;			// File which contains data of 1 simulation
 
 public:
 	// Constructors and destructor :
@@ -35,6 +35,9 @@ public:
 	
 	// Measures the execution time of 1 executable on 1 data set :
 	long measureExec(std::string pathExecutable, std::string outputExec);
+
+	// List all files in a directory
+	void getFilesInDirectory(std::vector<std::string> &out);
 
 	// Launch each executable :
 	bool executeFolder();

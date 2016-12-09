@@ -1,60 +1,6 @@
 #include "TimeMeasure.h"
 
-// Code based on http://stackoverflow.com/questions/306533/how-do-i-get-a-list-of-files-in-a-directory-in-c 
-/*
- *
-*/
-void GetFilesInDirectory(std::vector<std::string> &out, const std::string &directory)
-{
-#ifdef WINDOWS
-    HANDLE dir;
-    WIN32_FIND_DATA file_data;
-
-    if ((dir = FindFirstFile((directory + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-        return; /* No files found */
-
-    do {
-        const std::string file_name = file_data.cFileName;
-        const std::string full_file_name = directory + "/" + file_name;
-        const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
-
-        if (file_name[0] == '.')
-            continue;
-
-        if (is_directory)
-            continue;
-
-        out.push_back(full_file_name);
-    } while (FindNextFile(dir, &file_data));
-
-    FindClose(dir);
-#else
-    DIR *dir;
-    struct dirent *ent;
-    struct stat st;
-
-    dir = opendir(directory.c_str());
-    while ((ent = readdir(dir)) != NULL) {
-        const std::string file_name = ent->d_name;
-        const std::string full_file_name = directory + "/" + file_name;
-
-        
-        if (file_name[0] == '.')
-            continue;
-
-        if (stat(full_file_name.c_str(), &st) == -1)
-            continue;
-
-        const bool is_directory = (st.st_mode & S_IFDIR) != 0;
-
-        if (is_directory)
-            continue;
-        
-        out.push_back(full_file_name);
-    }
-    closedir(dir);
-#endif
-} 
+TimeMeasure::~TimeMeasure(){}
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){
     inputFolder = iFolder;
@@ -62,9 +8,11 @@ TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iD
     inputData = iData;
 }
 
-// Launch executable and measure its execution time 
-// Parameters : path of the resolution program and path of the output file
-// Output : execution time in milliseconds
+/*
+ * Launch executable and measure its execution time 
+ * Parameters : path of the resolution program and path of the output file
+ * Output : execution time in milliseconds
+*/
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -94,7 +42,72 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
     return static_cast<long>(execTime);
 }
 
-bool TimeMeasure::executeFolder(){
+// Code based on http://stackoverflow.com/questions/306533/how-do-i-get-a-list-of-files-in-a-directory-in-c 
+/*
+ * List all the files in a directory.
+ * Parameters : vector which will store all the file, name of the directory
+ * Output : nothing
+*/
+void TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
+{
+#ifdef WINDOWS
+    HANDLE dir;
+    WIN32_FIND_DATA file_data;
 
+    if ((dir = FindFirstFile((inputFolder + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
+        return; /* No files found */
+
+    do {
+        const std::string file_name = file_data.cFileName;
+        const std::string full_file_name = inputFolder + "/" + file_name;
+        const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+        if (file_name[0] == '.')
+            continue;
+
+        if (is_directory)
+            continue;
+
+        out.push_back(full_file_name);
+
+    } while (FindNextFile(dir, &file_data));
+
+    FindClose(dir);
+#else
+    DIR *dir;
+    struct dirent *ent;
+    struct stat st;
+
+    dir = opendir(inputFolder.c_str());
+    while ((ent = readdir(dir)) != NULL) {
+        const std::string file_name = ent->d_name;
+        const std::string full_file_name = inputFolder + "/" + file_name;
+
+        
+        if (file_name[0] == '.')
+            continue;
+
+        if (stat(full_file_name.c_str(), &st) == -1)
+            continue;
+
+        const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+
+        if (is_directory)
+            continue;
+        
+        out.push_back(full_file_name);
+    }
+    closedir(dir);
+#endif
+} 
+
+/*
+ * Launch each executable in the folder
+*/
+bool TimeMeasure::executeFolder(){
     return true; 
+}
+
+bool TimeMeasure::createResults(){
+    return true;
 }

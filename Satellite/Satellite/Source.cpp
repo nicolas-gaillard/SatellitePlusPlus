@@ -3,9 +3,10 @@
 #include <ctime>
 #include <time.h>		// time() == real time, clock() == processing time
 
-typedef std::chrono::high_resolution_clock Clock;
+// typedef std::chrono::high_resolution_clock Clock;
 
 int main(int argc, char *argv[]) {
+	/*
 	std::cout << "[I] Measuring execution time test" << std::endl << std::endl;
 	
 	// Get a number between 1 and 30 :
@@ -45,4 +46,18 @@ int main(int argc, char *argv[]) {
     std::cout << "chrono 2 : "
               << result
               << " milliseconds" << std::endl;
+
+	*/
+
+	std::cout << "Test GetFilesInDirectory" << std::endl;
+	std::vector<std::string> test;	
+	
+	std::string path("/Users/nicolaz/Desktop/Hashcode/Satellite/Satellite/text");
+
+	TimeMeasure tm(path, "", "");
+
+	tm.getFilesInDirectory(test);
+	for(auto &it : test){
+		std::cout << it << std::endl;
+	}
 }
