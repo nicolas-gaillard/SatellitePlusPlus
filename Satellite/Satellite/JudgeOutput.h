@@ -11,9 +11,10 @@ public:
 	JudgeOutput(std::string filename);
 	//~JudgeOutput();
 
-	bool isValidOutput();
+	bool isValidOutput(Satelite * arraySat, long nbSatelite);
+	bool isValidImages(Satelite * arraySat, long nbSatelite);
     bool isValidFormat();
-    bool isValidImage(Image img, Satelite sat);
+    bool isValidImage(int turn, Image * img, Satelite * sat);
     int getScore(Collection * arrayCol, long nbCol);
 	std::vector<Image> getImagesTaken();
 

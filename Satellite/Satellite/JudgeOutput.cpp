@@ -26,6 +26,28 @@ bool contains(std::vector<Image> &images, Image img) {
 }
 
 /*
+ * Check if an image can be taken by a satelite
+*/
+bool isInRange(Satelite * sat, Image * im) {
+	return (std::abs(sat->la - im->la) <= sat->maxRot) && (std::abs(sat->lo - im->lo) < sat->maxRot);
+}
+
+/*
+ * Get the satelite from arraySat with his id
+ * return ther satelite
+*/
+Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
+    Satelite * sat;
+    for (int i = 0; i < nbSat; i++) {
+        sat = &arraySat[i];
+        if (sat->id == id) {
+            return sat;
+        }
+    }
+    return nullptr;
+}
+
+/*
  * Contructor 
  * filename : path of the output file
 */
@@ -40,8 +62,8 @@ JudgeOutput::JudgeOutput(std::string outFileName) {
     * No satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
  * Return true if valid, false otherwise
 */
-bool JudgeOutput::isValidOutput() {
-    return isValidFormat();
+bool JudgeOutput::isValidOutput(Satelite * arraySat, long nbSatelite) {
+    return ((isValidFormat())&&(isValidImages(arraySat, nbSatelite)));
 }
 
 /* 
@@ -78,13 +100,50 @@ bool JudgeOutput::isValidFormat() {
     return true;
 }
 
+/*
+ * Check all the images of the output
+ * Return true if all images are valid, false otherwise
+*/
+bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
+    Image * img;
+    Satelite * sat;
+    int turn;
+    std::string line;
+     // Get the first line : number of image taken
+	std::getline(*outputFile, line);
+    std::vector<std::string> elems;
+	int nbImageTaken = std::stoi(line);
 
+    for (int i = 0; i < nbImageTaken; i++) {
+        img = new Image();
+        std::getline(*outputFile, line);
+
+        splitStr(line, ' ', elems);
+
+        img->la = std::stoi(elems[0]);
+        img->lo = std::stoi(elems[1]);
+
+        turn = std::stoi(elems[2]);
+
+        // Get the satelite from arraySat with his ID
+        sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
+
+        // Test the current image
+        if (!isValidImage(turn, img, sat)) {
+            return false;
+        }
+    }
+    // Get back to the beginning of the file
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
+    return true;
+}
 
 /*
- * Check if the image img was in the range of the satelite sat 
+ * Check if the image img was in the range of the satelite sat at turn t
  * Return true if it was in range, false otherwise
 */
-bool JudgeOutput::isValidImage(Image img, Satelite sat) {
+bool JudgeOutput::isValidImage(int t, Image * img, Satelite * sat) {
     // attendre la fonction d'étienne de calcul de position, d'un satellite
     // faire à partir du fichier de sortie
     return false;
@@ -117,6 +176,8 @@ std::vector<Image> JudgeOutput::getImagesTaken() {
         imgs.push_back(*img);
         elems.clear();
     }
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
     return imgs;
 }
 

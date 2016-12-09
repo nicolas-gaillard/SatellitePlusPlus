@@ -5,7 +5,8 @@ int main() {
     SimulationData data = rc.extractData();
     JudgeOutput jo("text/example.out");
     Collection * arrayCol = data.getArrayCol();
-    if (jo.isValidOutput()) {
+    Satelite * arraySat = data.getArraySat();
+    if (jo.isValidOutput(arraySat, data.getNbSatelite())) {
         std::cout << "Score final : " << jo.getScore(arrayCol, data.getNbCollection()) << std::endl;
     }
 }
