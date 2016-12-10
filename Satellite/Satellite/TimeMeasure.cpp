@@ -2,17 +2,28 @@
 
 TimeMeasure::~TimeMeasure(){}
 
-TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){
+/*
+ * TODO :
+ *  - Voir si les valeurs par défaut sont bonnes (préciser le dossier ?)
+ */
+
+TimeMeasure::TimeMeasure(std::string iFolder){
     inputFolder = iFolder;
-    outputResults = new std::ifstream(output);
+    inputData = "forever_alone.in";
+    outputResults = new std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);      
+}
+
+TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){    
+    inputFolder = iFolder;
+    outputResults = new std::fstream(output.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
     inputData = iData;
 }
 
 /*
- * Launch executable and measure its execution time 
+ * Launches one executable and measures its execution time 
  * Parameters : path of the resolution program and path of the output file
  * Output : execution time in milliseconds
-*/
+ */
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -44,10 +55,10 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
 
 // Code based on http://stackoverflow.com/questions/306533/how-do-i-get-a-list-of-files-in-a-directory-in-c 
 /*
- * List all the files in a directory.
+ * Lists all the files in a directory.
  * Parameters : vector which will store all the file, name of the directory
  * Output : nothing
-*/
+ */
 bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
 {
 #ifdef WINDOWS
@@ -111,10 +122,10 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
 } 
 
 /*
- * Launch each executable in the folder
+ * Launches each executable in the folder
  * Parameters : 
  * Output : boolean 
-*/
+ */
 bool TimeMeasure::executeFolder(){
     // It contains the path of each executable
     std::vector<std::string> execList;
@@ -136,6 +147,20 @@ bool TimeMeasure::executeFolder(){
     return true; 
 }
 
-bool TimeMeasure::createResults(){
-    return true;
+/*
+ * Writes in an output file the performance of each executable
+ */
+void TimeMeasure::createResults(){
+
+    /*
+    for (auto &mit : resultTabs) {
+       //outputResults << mit ;
+    }
+    */
+    
+}
+
+void whoIsTheBest(){
+
+
 }

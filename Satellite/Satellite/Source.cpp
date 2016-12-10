@@ -54,10 +54,18 @@ int main(int argc, char *argv[]) {
 	
 	std::string path("/Users/nicolaz/Desktop/Hashcode/Satellite/Satellite/text");
 
-	TimeMeasure tm(path, "", "");
+	// TimeMeasure tm(path, "", "");
+	TimeMeasure tm(path);
 
 	tm.getFilesInDirectory(test);
+	
 	for(auto &it : test){
-		std::cout << it << std::endl;
+		std::cout << it << std::endl; 
 	}
+
+	std::cout << std::endl << "Test : write in a file " << std::endl;
+	
+	std::fstream toto("/Users/nicolaz/Desktop/toto.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+	toto << "Test 1" << std::endl << "Test 2" << std::endl;
+	toto.close();
 }

@@ -21,7 +21,7 @@ private:
 
 	std::string inputFolder;		// Folder which contains all executables				
 	std::string inputData;			// Data set of one simulation
-	std::ifstream *outputResults;	// File which displays results
+	std::fstream *outputResults;	// File which displays results
 	std::map<std::string, std::pair<long, long> > resultTabs;
 	/*
 	 * Stores the execution time and the score of each executable
@@ -33,6 +33,7 @@ public:
 	// Constructors and destructor :
 	// -----------------------------
 	TimeMeasure(std::string, std::string, std::string);
+	TimeMeasure(std::string);
 	~TimeMeasure();
 
 	// Functions :
@@ -41,14 +42,17 @@ public:
 	// Measures the execution time of 1 executable on 1 data set :
 	long measureExec(std::string pathExecutable, std::string outputExec);
 
-	// List all files in a directory
+	// Lists all files in a directory
 	bool getFilesInDirectory(std::vector<std::string> &out);
 
-	// Launch each executable :
+	// Launches each executable :
 	bool executeFolder();
 	// search : browse directory cpp/c++
 
-	// Create the file where all the results are displayed :
-	bool createResults();
+	// Creates the file where all the results are displayed :
+	void createResults();
 	// search : ascii art c++
+
+	// Determines which executable is the most efficient  
+	void whoIsTheBest();
 };
