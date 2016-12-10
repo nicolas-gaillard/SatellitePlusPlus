@@ -20,9 +20,9 @@ class TimeMeasure{
 private:
 
 	std::string inputFolder;		// Folder which contains all executables				
-	std::ifstream *nameOutput;		// File which will display results
-	std::map<int, std::pair<long, long> > resultTabs;
-	std::string inputData;			// File which contains data of 1 simulation
+	std::ifstream *outputResults;	// File which displays results
+	std::map<std::string, std::pair<long, long> > resultTabs;
+	std::string inputData;			// Data set of one simulation
 
 public:
 	// Constructors and destructor :

@@ -4,7 +4,7 @@ TimeMeasure::~TimeMeasure(){}
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){
     inputFolder = iFolder;
-    nameOutput = new std::ifstream(output);
+    outputResults = new std::ifstream(output);
     inputData = iData;
 }
 
@@ -116,6 +116,14 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
  * Output : boolean 
 */
 bool TimeMeasure::executeFolder(){
+    std::vector<std::string> execList;
+
+    if (getFilesInDirectory(execList)) {
+        for (auto &vit : execList){
+            measureExec(vit, vit + "_out");
+        }
+    }
+
     return true; 
 }
 
