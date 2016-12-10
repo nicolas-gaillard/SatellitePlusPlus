@@ -48,12 +48,12 @@ Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
 	Satelite * arraySatelite = new Satelite[nb];
 	Satelite * tmp;
 
-
 	for (size_t i = 0; i < nb; i++)
 	{
 		tmp = new Satelite();
 		getline(*infile, line);
 		split(line, ' ', elems);
+		tmp->id = i+1;
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
 		tmp->speed = atoi(elems[2].c_str());
