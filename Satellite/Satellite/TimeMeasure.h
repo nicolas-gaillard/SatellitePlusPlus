@@ -20,7 +20,7 @@ class TimeMeasure{
 private:
 
 	std::string inputFolder;		// Folder which contains all executables				
-	std::ifstream * nameOutput;		// File which will display results
+	std::ifstream *nameOutput;		// File which will display results
 	std::map<int, std::pair<long, long> > resultTabs;
 	std::string inputData;			// File which contains data of 1 simulation
 
@@ -37,7 +37,7 @@ public:
 	long measureExec(std::string pathExecutable, std::string outputExec);
 
 	// List all files in a directory
-	void getFilesInDirectory(std::vector<std::string> &out);
+	bool getFilesInDirectory(std::vector<std::string> &out);
 
 	// Launch each executable :
 	bool executeFolder();

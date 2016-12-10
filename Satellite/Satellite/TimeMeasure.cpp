@@ -48,61 +48,72 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
  * Parameters : vector which will store all the file, name of the directory
  * Output : nothing
 */
-void TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
+bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
 {
 #ifdef WINDOWS
     HANDLE dir;
     WIN32_FIND_DATA file_data;
 
     if ((dir = FindFirstFile((inputFolder + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
-        return; /* No files found */
+        // No files found 
+        return false; 
 
     do {
+        // Get the file's name
         const std::string file_name = file_data.cFileName;
+
+        // Get the file's path
         const std::string full_file_name = inputFolder + "/" + file_name;
+
+        // Check if the file is a directory :
         const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
-        if (file_name[0] == '.')
-            continue;
-
-        if (is_directory)
-            continue;
-
-        out.push_back(full_file_name);
+        // If the file is not a directory, add it on the vector 
+        if (!((file_name[0] == '.') || (is_directory)))
+            out.push_back(full_file_name);
 
     } while (FindNextFile(dir, &file_data));
+    // While there are files in the folder 
 
     FindClose(dir);
+    return true;
+
 #else
     DIR *dir;
     struct dirent *ent;
     struct stat st;
 
     dir = opendir(inputFolder.c_str());
+    // While there are files in the folder :
     while ((ent = readdir(dir)) != NULL) {
+        // Get the file's name :
         const std::string file_name = ent->d_name;
+
+        // Get the file's path :
         const std::string full_file_name = inputFolder + "/" + file_name;
 
-        
-        if (file_name[0] == '.')
-            continue;
-
-        if (stat(full_file_name.c_str(), &st) == -1)
-            continue;
-
+        // Check if the file is a directory :
         const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
-        if (is_directory)
-            continue;
-        
-        out.push_back(full_file_name);
+        // If the file is not a directory, add it on the vector 
+        if (!((file_name[0] == '.') || (stat(full_file_name.c_str(), &st) == -1) || is_directory))
+            out.push_back(full_file_name);
     }
-    closedir(dir);
+
+    if (closedir(dir) == 0) 
+        return true;
+    else {
+        std::cerr << "Can't close the directory" ;
+        return false;
+    }
+    
 #endif
 } 
 
 /*
  * Launch each executable in the folder
+ * Parameters : 
+ * Output : boolean 
 */
 bool TimeMeasure::executeFolder(){
     return true; 
