@@ -116,13 +116,22 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
  * Output : boolean 
 */
 bool TimeMeasure::executeFolder(){
+    // It contains the path of each executable
     std::vector<std::string> execList;
 
+    // Initialization of the vector :
     if (getFilesInDirectory(execList)) {
+        // Browsing the vector :
         for (auto &vit : execList){
-            measureExec(vit, vit + "_out");
+            // Adding the execution time (and leaving the score at 0) 
+            resultTabs[vit] = std::make_pair(measureExec(vit, vit + "_out"), 0);
         }
     }
+    
+    /*
+     * To modify only the second value of the pair :
+     * myPair.second = newValue;
+     */
 
     return true; 
 }

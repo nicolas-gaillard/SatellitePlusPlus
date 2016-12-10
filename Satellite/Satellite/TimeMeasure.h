@@ -20,9 +20,14 @@ class TimeMeasure{
 private:
 
 	std::string inputFolder;		// Folder which contains all executables				
+	std::string inputData;			// Data set of one simulation
 	std::ifstream *outputResults;	// File which displays results
 	std::map<std::string, std::pair<long, long> > resultTabs;
-	std::string inputData;			// Data set of one simulation
+	/*
+	 * Stores the execution time and the score of each executable
+	 *		- 1st long : execution time
+	 *		- 2nd long : score
+	 */ 
 
 public:
 	// Constructors and destructor :
@@ -45,4 +50,5 @@ public:
 
 	// Create the file where all the results are displayed :
 	bool createResults();
+	// search : ascii art c++
 };
