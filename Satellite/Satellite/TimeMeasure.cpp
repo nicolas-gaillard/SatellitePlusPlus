@@ -10,12 +10,12 @@ TimeMeasure::~TimeMeasure(){}
 TimeMeasure::TimeMeasure(std::string iFolder){
     inputFolder = iFolder;
     inputData = "forever_alone.in";
-    outputResults = new std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);      
+    outputResults = std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){    
     inputFolder = iFolder;
-    outputResults = new std::fstream(output.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
+    outputResults = std::fstream(output.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
     inputData = iData;
 }
 
@@ -149,18 +149,29 @@ bool TimeMeasure::executeFolder(){
 
 /*
  * Writes in an output file the performance of each executable
+ * Parameters : nothing
+ * Output : bool
  */
-void TimeMeasure::createResults(){
+bool TimeMeasure::createResults(){
+    // Normally, the file has been opened during the initialization
+    if (outputResults.is_open()) {
+        for (auto &mit : resultTabs) {
+            outputResults << "Exécutable : " << mit.first << std::endl;
+            outputResults << "Temps d'éxécution : " << mit.second.first << " ms" << std::endl;
+            outputResults << "Score : " << mit.second.second << " points" << std::endl << std::endl;
+        }
 
-    /*
-    for (auto &mit : resultTabs) {
-       //outputResults << mit ;
+        // whoIsTheBest should be call here
+
+        // We don't have to close it, destructor does its job. 
+        // outputResults.close();
+
+        return true;
     }
-    */
-    
+
+    return false;
 }
 
 void whoIsTheBest(){
-
 
 }

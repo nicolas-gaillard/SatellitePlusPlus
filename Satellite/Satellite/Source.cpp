@@ -64,8 +64,29 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::cout << std::endl << "Test : write in a file " << std::endl;
-	
+	/*
 	std::fstream toto("/Users/nicolaz/Desktop/toto.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 	toto << "Test 1" << std::endl << "Test 2" << std::endl;
 	toto.close();
+	*/
+
+	std::fstream toto("/Users/nicolaz/Desktop/toto.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+	std::map<std::string, std::pair<long, long> > myMap;
+
+	myMap["toto"] = std::make_pair(10, 12);
+	myMap["tata"] = std::make_pair(27, 33);
+	myMap["titi"] = std::make_pair(12, 97);
+	myMap["tutu"] = std::make_pair(12, 12);
+
+	for (auto &it : myMap) {
+		std::cout << it.first << std::endl;
+		toto << it.first << std::endl;
+		
+		std::cout << it.second.first << std::endl;
+		toto << it.second.first << std::endl;
+
+		std::cout << it.second.second << std::endl;
+		toto << it.second.second << std::endl;
+	
+	}
 }

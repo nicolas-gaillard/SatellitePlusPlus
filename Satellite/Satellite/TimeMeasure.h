@@ -21,7 +21,7 @@ private:
 
 	std::string inputFolder;		// Folder which contains all executables				
 	std::string inputData;			// Data set of one simulation
-	std::fstream *outputResults;	// File which displays results
+	std::fstream outputResults;		// File which displays results
 	std::map<std::string, std::pair<long, long> > resultTabs;
 	/*
 	 * Stores the execution time and the score of each executable
@@ -35,6 +35,12 @@ public:
 	TimeMeasure(std::string, std::string, std::string);
 	TimeMeasure(std::string);
 	~TimeMeasure();
+
+	// Getters 
+	// -------
+
+	// inline std::fstream getOutputResults(){return outputResults;}
+	// inline std::map<std::string, std::pair<long, long> > getResultTabs(){return resultTabs;}
 
 	// Functions :
 	// -----------
@@ -50,7 +56,7 @@ public:
 	// search : browse directory cpp/c++
 
 	// Creates the file where all the results are displayed :
-	void createResults();
+	bool createResults();
 	// search : ascii art c++
 
 	// Determines which executable is the most efficient  
