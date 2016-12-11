@@ -1,8 +1,5 @@
 #pragma once
 #include "DataReceiver.h"
-#include <string>
-#include <fstream>
-#include <vector>
 #include <algorithm>
 
 class JudgeOutput {

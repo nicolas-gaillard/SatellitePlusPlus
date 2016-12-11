@@ -1,5 +1,4 @@
 #pragma once
-
 #include "StructData.h"
 
 class SimulationData

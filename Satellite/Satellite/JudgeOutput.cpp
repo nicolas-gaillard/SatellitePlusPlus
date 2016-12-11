@@ -47,6 +47,31 @@ Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
     return nullptr;
 }
 
+Satelite * getSatPosition(Satelite * s,int turn)
+{
+    Satelite * sat;
+    sat->maxRot=s->maxRot;
+    sat->speed=s->speed;
+    sat->speedRot=s->speedRot;
+    if((s->la+s->speed)>=-324000&&(s->la+s->speed)>=-324000)
+        {
+            sat->la=s->la+turn*s->speed;
+            sat->lo=s->lo-turn*15;
+        }
+    else if((s->la+s->speed)>324000)
+        {
+            sat->la=648000-(s->la+turn*s->speed);
+            sat->lo=s->lo-turn*15-648000;
+        }
+    else
+        {
+            sat->la=-648000-(s->la+turn*s->speed);
+            sat->lo=s->lo-turn*15-648000;
+        }
+    return sat;
+}
+
+
 /*
  * Contructor 
  * filename : path of the output file
@@ -109,6 +134,7 @@ bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
     Satelite * sat;
     int turn;
     std::string line;
+    bool b = true;
      // Get the first line : number of image taken
 	std::getline(*outputFile, line);
     std::vector<std::string> elems;
@@ -125,18 +151,23 @@ bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
 
         turn = std::stoi(elems[2]);
 
-        // Get the satelite from arraySat with his ID
-        sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
+        // Change the satelite only if it different
+        if (sat->id != std::stoi(elems[3])) {
+            // Get the satelite from arraySat with his ID
+            sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
+        }
+
+        std::cout << sat->speed << std::endl;
 
         // Test the current image
         if (!isValidImage(turn, img, sat)) {
-            return false;
+            b = false;
         }
     }
     // Get back to the beginning of the file
     outputFile->clear();
     outputFile->seekg(0, std::ios::beg);
-    return true;
+    return b;
 }
 
 /*
@@ -144,9 +175,7 @@ bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
  * Return true if it was in range, false otherwise
 */
 bool JudgeOutput::isValidImage(int t, Image * img, Satelite * sat) {
-    // attendre la fonction d'étienne de calcul de position, d'un satellite
-    // faire à partir du fichier de sortie
-    return false;
+    return isInRange(getSatPosition(sat, t), img);
 }
 
 /*
@@ -221,28 +250,4 @@ int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
         }
     }
     return score;
-}
-
-Satelite& getSatPosition(const Satelite &s,int turn)
-{
-    Satelite sat;
-    sat.maxRot=s.maxRot;
-    sat.speed=s.speed;
-    sat.speedRot=s.speedRot;
- if((s.la+s.speed)>=-324000&&(s.la+s.speed)>=-324000)
- {
-     sat.la=s.la+turn*s.speed;
-     sat.lo=s.lo-turn*15;
- }
-    else if((s.la+s.speed)>324000)
-    {
-        sat.la=648000-(s.la+turn*s.speed);
-        sat.lo=s.lo-turn*15-648000;
-    }
-    else
-    {
-        sat.la=-648000-(s.la+turn*s.speed);
-        sat.lo=s.lo-turn*15-648000;
-    }
-    return sat;
 }
