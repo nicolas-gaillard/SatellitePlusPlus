@@ -12,6 +12,7 @@ public:
 	bool isValidImages(Satelite * arraySat, long nbSatelite);
     bool isValidFormat();
     bool isValidImage(int turn, Image * img, Satelite * sat);
+	bool isValidCamera();
     int getScore(Collection * arrayCol, long nbCol);
 	std::vector<Image> getImagesTaken();
 

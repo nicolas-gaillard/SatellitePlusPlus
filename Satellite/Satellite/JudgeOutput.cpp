@@ -44,6 +44,7 @@ Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
             return sat;
         }
     }
+    std::cout << "nullptr" << std::endl;
     return nullptr;
 }
 
@@ -134,11 +135,13 @@ bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
     Satelite * sat;
     int turn;
     std::string line;
-    bool b = true;
      // Get the first line : number of image taken
 	std::getline(*outputFile, line);
     std::vector<std::string> elems;
 	int nbImageTaken = std::stoi(line);
+
+    // To compare in the for (first id is 1)
+    sat->id = 0;
 
     for (int i = 0; i < nbImageTaken; i++) {
         img = new Image();
@@ -157,17 +160,16 @@ bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
             sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
         }
 
-        std::cout << sat->speed << std::endl;
-
-        // Test the current image
+         // Test the current image
         if (!isValidImage(turn, img, sat)) {
-            b = false;
+            return false;
         }
+        elems.clear();
     }
     // Get back to the beginning of the file
     outputFile->clear();
     outputFile->seekg(0, std::ios::beg);
-    return b;
+    return true;
 }
 
 /*
