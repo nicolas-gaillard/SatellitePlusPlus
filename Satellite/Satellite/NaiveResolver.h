@@ -14,7 +14,7 @@ public:
 	void threadResolv(int i, int n,bool verbose,std::string * result);
 
 private:
-
+	int nbConflict;
 	int nbPict;
 	SimulationData * simData;
 	std::string solution;

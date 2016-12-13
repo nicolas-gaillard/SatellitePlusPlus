@@ -125,24 +125,31 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 					// Yes, so we can iterate through all its images.
 					for (int k = 0; k < coll.nbImg; k++) {
 						// If the image can be shot, and there is no conflict, then we take the picture.
-						if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn)) {
+						if (isInRange(sat, &coll.listImg[k]) ) {
+							if (!isConflict(sat, coll.listImg[k], turn)) {
+								Image tmp_im = coll.listImg[k];
+								tmp_im.la = sat->la - coll.listImg[k].la;
+								tmp_im.lo = sat->lo - coll.listImg[k].lo;
+								sat->lastShotRelativePosition = &tmp_im;
+								sat->lastShotTurn = turn;
 
+								// And we save the result in our result string.
+								result[i] += std::to_string(coll.listImg[k].la) + " ";
+								result[i] += std::to_string(coll.listImg[k].lo) + " ";
+								result[i] += "" + std::to_string(turn);
+								result[i] += " " + std::to_string(x);
+								result[i] += '\n';
+								// we don't forget to increment the number of pictures taken, isn't it ?
+								nbPict++;
+							}
+							else
+							{
+								nbConflict++;
+							}
 							// We set the last shot of the satelite to be this picture, at this turn.
-							Image tmp_im = coll.listImg[k];
-							tmp_im.la = sat->la - coll.listImg[k].la;
-							tmp_im.lo = sat->lo - coll.listImg[k].lo;
-							sat->lastShotRelativePosition = &tmp_im;
-							sat->lastShotTurn = turn;
-
-							// And we save the result in our result string.
-							result[i] += std::to_string(coll.listImg[k].la) + " ";
-							result[i] += std::to_string(coll.listImg[k].lo) + " ";
-							result[i] += "" + std::to_string(turn);
-							result[i] += " " + std::to_string(i);
-							result[i] += '\n';
-							// we don't forget to increment the number of pictures taken, isn't it ?
-							nbPict++;
+							
 						}
+						
 					}
 				}
 			}
@@ -167,9 +174,11 @@ void NaiveResolver::launchResolution(bool verbose) {
 	int tmp = 4;
 	std::thread *t = new std::thread[tmp];
 	NaiveResolver * th = this;
+	this->nbConflict = 0;
 
 	// Initialize the variables which stores the resulting data
 	std::string * result = new std::string[tmp] ;
+
 
 	if (verbose) {
 		std::cout << "[I] Start simulation ..." << std::endl;
@@ -185,7 +194,7 @@ void NaiveResolver::launchResolution(bool verbose) {
 		t[i].join();
 	}
 
-
+	std::cout << "nb conf" << nbConflict << std::endl;
 	
 	// When the simulation is over, we write in the output file.
 	std::ofstream myfile;
