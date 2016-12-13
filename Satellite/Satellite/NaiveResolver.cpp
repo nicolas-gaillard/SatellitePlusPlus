@@ -41,18 +41,29 @@ bool isInTimeStamp(int turn, Collection coll) {
 Check a possible conflict if the satelite take the given image at the given turn.
 */
 bool isConflict(Satelite * sat, Image im, int turn) {
+	// Get the position of the previous picture taken by the satelite, relative to it.
 	Image * a = sat->lastShotRelativePosition;
-
-	if (a != NULL) {
-		Image b;
-		b.la = sat->la - im.la;
-		b.lo = sat->lo - im.lo;
-
+	
+	// Compute the relative position of the input image
+	Image b;
+	b.la = sat->la - im.la;
+	b.lo = sat->lo - im.lo;
+	
+	// If there is no previous image taken, then the relative position is (0,0)
+	if (a == NULL) {
+		a = new Image;
+		a->la = 0;
+		a->lo = 0;
+		// We return the fact that there is a conflict or not.
 		return std::sqrt(std::pow(b.la - a->la, 2.0) + std::pow(b.lo - a->lo, 2.0)) > (sat->speedRot * (turn - sat->lastShotTurn));
 	}
 	else {
-		return false;
+		// We return the fact that there is a conflict or not.
+		return std::sqrt(std::pow(b.la - a->la, 2.0) + std::pow(b.lo - a->lo, 2.0)) > (sat->speedRot * (turn - sat->lastShotTurn));
 	}
+
+	
+	
 }
 
 /*
