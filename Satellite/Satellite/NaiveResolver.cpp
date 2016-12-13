@@ -138,7 +138,7 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 							result[i] += std::to_string(coll.listImg[k].la) + " ";
 							result[i] += std::to_string(coll.listImg[k].lo) + " ";
 							result[i] += "" + std::to_string(turn);
-							result[i] += " " + std::to_string(i);
+							result[i] += " " + std::to_string(x);
 							result[i] += '\n';
 							// we don't forget to increment the number of pictures taken, isn't it ?
 							nbPict++;
