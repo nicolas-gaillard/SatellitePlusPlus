@@ -76,20 +76,20 @@ void moveSatelite(Satelite * sat) {
 	int new_speed = 0;
 
 	// Compute the new coordinates
-	if (sat->la + sat->speed >= -324000 && sat->la + sat->speed <= 324000) {
+	if (sat->la + sat->speed >= -90 * 60 * 60 && sat->la + sat->speed <= 90 * 60 * 60) {
 		new_speed = sat->speed;
 		new_la = sat->la + sat->speed; new_lo = sat->lo - 15;
 	}
-	else if (sat->la + sat->speed>9324000) {
+	else if (sat->la + sat->speed>90 * 60 * 60) {
 		new_speed = -sat->speed;
-		new_la = 648000 - (sat->la + sat->speed); new_lo = -648000 + sat->lo - 15;
+		new_la = 180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
 	}
-	else if (sat->la + sat->speed < -324000) {
+	else if (sat->la + sat->speed < -90 * 60 * 60) {
 		new_speed = -sat->speed;
-		new_la = -648000 - (sat->la + sat->speed); new_lo = -648000 + sat->lo - 15;
+		new_la = -180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
 	}
-	if (new_lo < -648000)new_lo += 1296000;
-	if (new_lo > 647999)new_lo -= 1296000;
+	if (new_lo < -648000)new_lo += 360 * 60 * 60;
+	if (new_lo > 647999)new_lo -= 360 * 60 * 60;
 
 	// Set the new coordinates to the satelite
 	sat->lo = new_lo;
