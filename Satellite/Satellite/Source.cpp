@@ -7,8 +7,8 @@ int main() {
 
 
 
-	std::string filename = "text/forever_alone.in";
-	std::string outfilename = "text/forever_alone.out";
+	std::string filename = "text/constellation.in";
+	std::string outfilename = "text/constellation.out";
 
 	std::cout << "================================" << std::endl;
 	std::cout << "\tSATELLITE PLUS PLUS" << std::endl;
@@ -27,7 +27,7 @@ int main() {
 
 	NaiveResolver * naive = new NaiveResolver(simData, outfilename);
 
-	naive->launchResolution(true);
+	naive->launchResolution(false);
 
 	system("pause");
 
