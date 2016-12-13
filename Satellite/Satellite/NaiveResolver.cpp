@@ -111,11 +111,11 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 	for (size_t x = i; x < satNb; x = x + n)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
+		Satelite * sat = &simData->getArraySat()[x];
 
 		// For each satelite...
 		for (int turn = 0; turn < maxTurns; turn++) {
 			// We get the current satelite, for better understanding
-			Satelite * sat = &simData->getArraySat()[i];
 			// ... for each existing collection ...
 			for (int j = 0; j < colNb; j++) {
 				// We get the current collection for better understanding
