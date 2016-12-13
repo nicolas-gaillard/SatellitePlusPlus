@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <numeric>
+#include <chrono>
+#include <thread> 
 
 NaiveResolver::NaiveResolver(SimulationData * simDat, std::string filename) {
 	simData = simDat;
@@ -87,30 +90,23 @@ void moveSatelite(Satelite * sat) {
 
 }
 
-void NaiveResolver::launchResolution(bool verbose) {
-	// Get data for better reading.
+
+void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result) {
 	int maxTurns = simData->getDuration();
 	int satNb = simData->getNbSatelite();
 	int colNb = simData->getNbCollection();
 
-	// Initialize the variables which stores the resulting data
-	std::string result = "";
-	int nbPict = 0;
-
-	if (verbose) {
-		std::cout << "[I] Start simulation ..." << std::endl;
-		std::cout << "\r[I] Complete : 0%";
-	}
-
 	// For each turn of the simulation...
-	for (int turn = 0; turn < maxTurns; turn++)
+	for (size_t x = i; x < satNb; x = x + n)
 	{
+		auto start = std::chrono::high_resolution_clock::now();
+
 		// For each satelite...
-		for (int i = 0; i < satNb; i++) {
+		for (int turn = 0; turn < maxTurns; turn++) {
 			// We get the current satelite, for better understanding
 			Satelite * sat = &simData->getArraySat()[i];
 			// ... for each existing collection ...
-			for (int j = 0; j < colNb; j++)	{
+			for (int j = 0; j < colNb; j++) {
 				// We get the current collection for better understanding
 				Collection coll = simData->getArrayCol()[j];
 				// Is the right time to take a picture in this collection ?
@@ -128,11 +124,11 @@ void NaiveResolver::launchResolution(bool verbose) {
 							sat->lastShotTurn = turn;
 
 							// And we save the result in our result string.
-							result += std::to_string(coll.listImg[k].la) + " ";
-							result += std::to_string(coll.listImg[k].lo) + " ";
-							result += "" + std::to_string(turn);
-							result += " " + std::to_string(i);
-							result += '\n';
+							result[i] += std::to_string(coll.listImg[k].la) + " ";
+							result[i] += std::to_string(coll.listImg[k].lo) + " ";
+							result[i] += "" + std::to_string(turn);
+							result[i] += " " + std::to_string(i);
+							result[i] += '\n';
 							// we don't forget to increment the number of pictures taken, isn't it ?
 							nbPict++;
 						}
@@ -144,19 +140,50 @@ void NaiveResolver::launchResolution(bool verbose) {
 
 		}
 
-		if (verbose)
-			std::cout << "\r[I] Complete : " << (turn * 100) / maxTurns << "%";
-		
+		if (verbose) {
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> diff = end - start;
+			std::cout << " satelite  " << x << " thread no " << i << "/" << n << " time elapsed " << diff.count() << " s\n";
+		}
+
 	}
 
-	if (verbose)
-		std::cout << "\r[I] Complete.\t\t\t\t\t" << std::endl;
+}
+
+void NaiveResolver::launchResolution(bool verbose) {
+	// Get data for better reading.
+	int satNb = simData->getNbSatelite();
+	int tmp = 4;
+	std::thread *t = new std::thread[tmp];
+	NaiveResolver * th = this;
+
+	// Initialize the variables which stores the resulting data
+	std::string * result = new std::string[tmp] ;
+
+	if (verbose) {
+		std::cout << "[I] Start simulation ..." << std::endl;
+		std::cout << "\r[I] Complete : 0%";
+	}
+
+	for (int i = 0; i < tmp; i++) {
+		result[i] = std::string();
+		t[i] = std::thread([&th, i, tmp,result,verbose]() { th->threadResolv(i, tmp,verbose,result); });
+	}
+	for (size_t i = 0; i < tmp; i++)
+	{
+		t[i].join();
+	}
+
+
 	
 	// When the simulation is over, we write in the output file.
 	std::ofstream myfile;
 	myfile.open(outFilename);
 	myfile << std::to_string(nbPict) << std::endl;
-	myfile << result;
+	for (size_t i = 0; i < tmp; i++)
+		myfile << result[i];
+
 	myfile.close();
+	
 
 }
