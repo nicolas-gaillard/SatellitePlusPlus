@@ -56,6 +56,7 @@ Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
 		tmp->speed = atoi(elems[2].c_str());
 		tmp->speedRot = atoi(elems[3].c_str());
 		tmp->maxRot = atoi(elems[4].c_str());
+		tmp->nbImage = 0;
 		arraySatelite[i] = *tmp;
 		elems.clear();
 	}
@@ -90,7 +91,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->nbPts = atoi(elems[0].c_str());
 		tmp->nbImg = atoi(elems[1].c_str());
 		tmp->nbTimeSt = atoi(elems[2].c_str());
-
+		tmp->doable = true;
 		tmp->listImg = this->extractImage(tmp->nbImg);
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";

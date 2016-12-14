@@ -9,6 +9,7 @@
 NaiveResolver::NaiveResolver(SimulationData * simDat, std::string filename) {
 	simData = simDat;
 	outFilename = filename;
+	available = std::vector<Collection*>();
 }
 
 /*
@@ -126,27 +127,8 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 					for (int k = 0; k < coll.nbImg; k++) {
 						// If the image can be shot, and there is no conflict, then we take the picture.
 						if (isInRange(sat, &coll.listImg[k]) ) {
-							if (!isConflict(sat, coll.listImg[k], turn)) {
-								Image tmp_im = coll.listImg[k];
-								tmp_im.la = sat->la - coll.listImg[k].la;
-								tmp_im.lo = sat->lo - coll.listImg[k].lo;
-								sat->lastShotRelativePosition = &tmp_im;
-								sat->lastShotTurn = turn;
-
-								// And we save the result in our result string.
-								result[i] += std::to_string(coll.listImg[k].la) + " ";
-								result[i] += std::to_string(coll.listImg[k].lo) + " ";
-								result[i] += "" + std::to_string(turn);
-								result[i] += " " + std::to_string(x);
-								result[i] += '\n';
-								// we don't forget to increment the number of pictures taken, isn't it ?
-								nbPict++;
-							}
-							else
-							{
-								nbConflict++;
-							}
-							// We set the last shot of the satelite to be this picture, at this turn.
+							sat->nbImage++;
+							coll.listImg[k].nbSat++;
 							
 						}
 						
@@ -167,6 +149,46 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 	}
 
 }
+void NaiveResolver::checkDoable() {
+	int cptzero = 0;
+	int cptmoyenne = 0;
+	int cptimage = 0;
+	int cptcoll = 0;
+
+	for (size_t i = 0; i < simData->getNbCollection(); i++)
+	{
+		Collection c = simData->getArrayCol()[i];
+		for (size_t j = 0; j < c.nbImg; j++)
+		{
+			if (c.listImg[j].nbSat == 0) {
+				cptzero += c.nbImg;
+				c.doable = false;
+				break;
+			}
+			cptmoyenne += c.listImg[j].nbSat;
+
+		}
+
+		if (c.doable) {
+			cptcoll++;
+			this->available.push_back(&simData->getArrayCol()[i]);
+			
+		}
+
+		cptimage += c.nbImg;
+	}
+
+	for (size_t i = 0; i < available.size(); i++)
+	{
+		if (available[i]->doable == false)
+			std::cout << "trololololololo";
+	}
+
+	std::cout << " nb image with 0 satelite " << cptzero << " nb average satperimage " << cptmoyenne / cptimage << std::endl;
+	std::cout << "nb coll doable " << cptcoll << " out of " << simData->getNbCollection() << std::endl;
+}
+
+
 
 void NaiveResolver::launchResolution(bool verbose) {
 	// Get data for better reading.
@@ -178,6 +200,7 @@ void NaiveResolver::launchResolution(bool verbose) {
 
 	// Initialize the variables which stores the resulting data
 	std::string * result = new std::string[tmp] ;
+
 
 
 	if (verbose) {
@@ -195,15 +218,15 @@ void NaiveResolver::launchResolution(bool verbose) {
 	}
 
 	std::cout << "nb conf" << nbConflict << std::endl;
-	
+	this->checkDoable();
 	// When the simulation is over, we write in the output file.
-	std::ofstream myfile;
+	/*std::ofstream myfile;
 	myfile.open(outFilename);
 	myfile << std::to_string(nbPict) << std::endl;
 	for (size_t i = 0; i < tmp; i++)
 		myfile << result[i];
 
-	myfile.close();
+	myfile.close();*/
 	
 
 }

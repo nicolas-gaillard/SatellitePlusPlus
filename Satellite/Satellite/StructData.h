@@ -6,6 +6,7 @@ struct Image
 {
 	long la;
 	long lo;
+	int nbSat;
 };
 
 struct Satelite
@@ -17,6 +18,7 @@ struct Satelite
 	int maxRot;
 	Image * lastShotRelativePosition;
 	int lastShotTurn;
+	int nbImage;
 };
 
 struct TimeStamp {
@@ -31,6 +33,7 @@ struct Collection
 	int nbTimeSt;
 	TimeStamp * listTimeSt;
 	Image * listImg;
+	bool doable;
 
 };
 
