@@ -1,5 +1,6 @@
 #pragma once
 #include "DataReceiver.h"
+#include "SatUtils.h"
 #include <algorithm>
 
 class JudgeOutput {
