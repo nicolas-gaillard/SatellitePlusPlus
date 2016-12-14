@@ -15,7 +15,7 @@ public:
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
 	Collection * extractCollection(SimulationData * Sd);
-	Image * extractImage(int nb);
+	Image * extractImage(int nb,int idxColl);
 	TimeStamp * extractTimeStamp(int nb);
 
 private:

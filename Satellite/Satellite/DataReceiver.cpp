@@ -93,7 +93,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->nbTimeSt = atoi(elems[2].c_str());
 		tmp->doable = true;
 		tmp->nbPtsLeft = tmp->nbPts;
-		tmp->listImg = this->extractImage(tmp->nbImg);
+		tmp->listImg = this->extractImage(tmp->nbImg,i);
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";
 
@@ -107,7 +107,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 }
 
 
-Image *  DataReceiver::extractImage(int nb) {
+Image *  DataReceiver::extractImage(int nb,int idxColl) {
 
 	std::string line;
 	std::vector<std::string> elems;
@@ -126,6 +126,8 @@ Image *  DataReceiver::extractImage(int nb) {
 
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
+		tmp->coll = idxColl;
+		tmp->taken = false;
 
 		arrayImage[i] = *tmp;
 		elems.clear();

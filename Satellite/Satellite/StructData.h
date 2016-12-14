@@ -8,6 +8,7 @@ struct Image
 	long lo;
 	int nbSat;
 	bool taken;
+	int  coll;
 };
 
 struct Satelite

@@ -5,6 +5,7 @@
 #include <numeric>
 #include <chrono>
 #include <thread> 
+#include <iterator>
 
 NaiveResolver::NaiveResolver(SimulationData * simDat, std::string filename) {
 	simData = simDat;
@@ -104,12 +105,60 @@ void moveSatelite(Satelite * sat) {
 
 }
 
+int NaiveResolver::makeChoice(std::vector<Image*>possible, Satelite *sat ) {
+	int valmax = 0;
+	int idxvalmax ;
+	int val;
+	Image * img;
+	Collection c;
+	for (size_t i = 0; i < possible.size(); i++)
+	{
+		img = possible[i];
+		c = simData->getArrayCol()[img->coll];
+		val = c.nbPts / (img->nbSat * c.nbPtsLeft * c.nbPtsLeft);
+		if (val > valmax)
+			idxvalmax = i;
+	}
+	return idxvalmax;
+}
 
-void NaiveResolver::threadResolv(int i, int n, bool verbose, std::string * result) {
+void NaiveResolver::afterChoice(std::vector<Image*> possible, int idxChoice,Satelite *sat,int turn){
+	Result res;
+	Image tmp_im;
+	for (size_t idx = 0; idx < possible.size(); idx++)
+	{
+		std::cout << "Image la " << possible[idx]->la << " lo " << possible[idx]->lo << " coll nul " << possible[idx]->coll << std::endl;
+		if (idx == idxChoice) {
+			res.img = possible[idx];
+			continue;
+		}
+		possible[idx]->nbSat--;
+		if (possible[idx]->nbSat == 0)
+			this->simData->getArrayCol()[possible[idx]->coll].doable = false;
+	}
+	std::cout << this->simData->getArrayCol()[res.img->coll].nbPtsLeft << std::endl;
+	this->simData->getArrayCol()[res.img->coll].nbPtsLeft--;
+	res.la = sat->la;
+	res.lo = sat->lo;
+	res.turn = turn;
+	res.img->taken = true;
+
+	tmp_im.la = sat->la - res.img->la;
+	tmp_im.lo = sat->lo - res.img->lo;
+	sat->lastShotRelativePosition = &tmp_im;
+	sat->lastShotTurn = turn;
+	// And we save the result in our result string.
+	
+	this->res.push_back(res);
+}
+
+void NaiveResolver::threadResolv(int i, int n, bool verbose) {
 	int maxTurns = simData->getDuration();
-	int satNb = simData->getNbSatelite();
-	int memetps;
-
+	const int satNb = simData->getNbSatelite();
+	int idxChoice;
+	Satelite tmp;
+	
+	std::vector<Image*> possible = std::vector<Image*>();
 	// For each turn of the simulation...
 	for (size_t x = i; x < satNb; x = x + n)
 	{
@@ -118,26 +167,34 @@ void NaiveResolver::threadResolv(int i, int n, bool verbose, std::string * resul
 
 		// For each satelite...
 		for (int turn = 0; turn < maxTurns; turn++) {
-			memetps = 0;
 			// We get the current satelite, for better understanding
 			// ... for each existing collection ...
 			for (int j = 0; j < this->available.size(); j++) {
 				// We get the current collection for better understanding
 				Collection coll = *available[j];
-				// Is the right time to take a picture in this collection ?
-				if (isInTimeStamp(turn, coll)) {
-					// Yes, so we can iterate through all its images.
-					for (int k = 0; k < coll.nbImg; k++) {
-						// If the image can be shot, and there is no conflict, then we take the picture.
-						if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn)) {
+				if (coll.doable == true) {
+					// Is the right time to take a picture in this collection ?
+					if (isInTimeStamp(turn, coll)) {
+						// Yes, so we can iterate through all its images.
+						for (int k = 0; k < coll.nbImg; k++) {
+							// If the image can be shot, and there is no conflict, then we take the picture.
+							if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn) && !coll.listImg[k].taken) {
+								possible.push_back(&coll.listImg[k]);
+
+							}
 
 						}
-
 					}
+
 				}
+				
 			}
-			if (memetps > 1)
-				std::cout << " meme temps nombre " << memetps << std::endl;
+			if (possible.size() != 0) {
+				idxChoice = this->makeChoice(possible, sat);
+				this->afterChoice(possible, idxChoice, sat, turn);
+				possible.clear();
+			}
+		 	
 			// And finally, we move the satelite.
 			moveSatelite(sat);
 
@@ -146,10 +203,11 @@ void NaiveResolver::threadResolv(int i, int n, bool verbose, std::string * resul
 		if (verbose) {
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> diff = end - start;
-			std::cout << " satelite  " << x << " thread no " << i << "/" << n << " time elapsed " << diff.count() << " s\n";
+			std::cout << "Choice step satelite  " << x << " thread no " << i << "/" << n << " time elapsed " << diff.count() << " s\n";
 		}
 
 	}
+	std::cout << "nb photos prises " << this->res.size() << std::endl;
 
 }
 
@@ -157,7 +215,6 @@ void NaiveResolver::threadPrepResolv(int i, int n ,bool verbose,std::string * re
 	int maxTurns = simData->getDuration();
 	int satNb = simData->getNbSatelite();
 	int colNb = simData->getNbCollection();
-	int memetps;
 	// For each turn of the simulation...
 	for (size_t x = i; x < satNb; x = x + n)
 	{
@@ -166,7 +223,6 @@ void NaiveResolver::threadPrepResolv(int i, int n ,bool verbose,std::string * re
 
 		// For each satelite...
 		for (int turn = 0; turn < maxTurns; turn++) {
-			memetps = 0;
 			// We get the current satelite, for better understanding
 			// ... for each existing collection ...
 			for (int j = 0; j < colNb; j++) {
@@ -178,14 +234,14 @@ void NaiveResolver::threadPrepResolv(int i, int n ,bool verbose,std::string * re
 					for (int k = 0; k < coll.nbImg; k++) {
 						// If the image can be shot, and there is no conflict, then we take the picture.
 						if (isInRange(sat, &coll.listImg[k]) ) {
-							
+							coll.listImg[k].nbSat++;
+							sat->nbImage++;
 						}
 						
 					}
 				}
 			}
-			if (memetps > 1)
-				std::cout << " meme temps nombre " << memetps << std::endl;
+			
 			// And finally, we move the satelite.
 			moveSatelite(sat);
 
@@ -229,11 +285,7 @@ void NaiveResolver::checkDoable() {
 		cptimage += c.nbImg;
 	}
 
-	for (size_t i = 0; i < available.size(); i++)
-	{
-		if (available[i]->doable == false)
-			std::cout << "trololololololo";
-	}
+	
 
 	std::cout << " nb image with 0 satelite " << cptzero << " nb average satperimage " << cptmoyenne / cptimage << std::endl;
 	std::cout << "nb coll doable " << cptcoll << " out of " << simData->getNbCollection() << std::endl;
@@ -247,6 +299,12 @@ void NaiveResolver::launchResolution(bool verbose) {
 	int tmp = 4;
 	std::thread *t = new std::thread[tmp];
 	NaiveResolver * th = this;
+	Satelite *  initialData = new Satelite[satNb];
+	
+	for (size_t i = 0; i < satNb; i++)
+	{
+		std::cout << this->simData->getArraySat()[i].la << std::endl;
+	}
 	this->nbConflict = 0;
 
 	// Initialize the variables which stores the resulting data
@@ -270,6 +328,12 @@ void NaiveResolver::launchResolution(bool verbose) {
 
 	std::cout << "nb conf" << nbConflict << std::endl;
 	this->checkDoable();
+
+	memcpy(initialData, simData->getArraySat(), sizeof(Satelite)*satNb);
+	free(simData->getArraySat());
+	this->simData->setArraySat(initialData);
+	threadResolv(0, 1, true);
+	
 	// When the simulation is over, we write in the output file.
 	/*std::ofstream myfile;
 	myfile.open(outFilename);
