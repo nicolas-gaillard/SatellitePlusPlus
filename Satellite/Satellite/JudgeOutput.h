@@ -5,18 +5,19 @@
 class JudgeOutput {
 
 public:
-	JudgeOutput(std::string filename);
+	JudgeOutput(std::string filename, SimulationData * simData);
 	//~JudgeOutput();
 
-	bool isValidOutput(Satelite * arraySat, long nbSatelite);
-	bool isValidImages(Satelite * arraySat, long nbSatelite);
+	bool isValidOutput();
+	bool isValidImages();
     bool isValidFormat();
     bool isValidImage(int turn, Image * img, Satelite * sat);
 	bool isValidCamera();
-    int getScore(Collection * arrayCol, long nbCol);
+    int getScore();
 	std::vector<Image> getImagesTaken();
 
 private:
 	std::ifstream * outputFile;
+	SimulationData * simData;
     
 };

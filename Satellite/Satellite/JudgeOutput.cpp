@@ -77,8 +77,9 @@ Satelite * getSatPosition(Satelite * s,int turn)
  * Contructor 
  * filename : path of the output file
 */
-JudgeOutput::JudgeOutput(std::string outFileName) {
+JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
     outputFile = new std::ifstream(outFileName);
+    this->simData = s;
 }
 
 /*
@@ -88,8 +89,8 @@ JudgeOutput::JudgeOutput(std::string outFileName) {
     * No satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
  * Return true if valid, false otherwise
 */
-bool JudgeOutput::isValidOutput(Satelite * arraySat, long nbSatelite) {
-    return ((isValidFormat())&&(isValidImages(arraySat, nbSatelite)));
+bool JudgeOutput::isValidOutput() {
+    return ((isValidFormat())&&(isValidImages()));
 }
 
 /* 
@@ -130,11 +131,16 @@ bool JudgeOutput::isValidFormat() {
  * Check all the images of the output
  * Return true if all images are valid, false otherwise
 */
-bool JudgeOutput::isValidImages(Satelite * arraySat, long nbSatelite) {
+bool JudgeOutput::isValidImages() {
     Image * img;
     Satelite * sat;
     int turn;
     std::string line;
+
+    // Get the array satelite and number of it
+    Satelite * arraySat = this->simData->getArraySat();
+    long nbSatelite = this->simData->getNbSatelite();
+
      // Get the first line : number of image taken
 	std::getline(*outputFile, line);
     std::vector<std::string> elems;
@@ -216,7 +222,7 @@ std::vector<Image> JudgeOutput::getImagesTaken() {
  * Get the score of the simulation 
  * Return the score
 */
-int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
+int JudgeOutput::getScore() {
     int score = 0;
     
     int numCol;
@@ -225,6 +231,8 @@ int JudgeOutput::getScore(Collection * arrayCol, long nbCol) {
     Image img;
 
     std::vector<Image> images = this->getImagesTaken();
+    Collection * arrayCol = this->simData->getArrayCol();
+    long nbCol = this->simData->getNbCollection();
 
     //  Browse the collection array 
     for (numCol = 0; numCol < nbCol; numCol++) { 
