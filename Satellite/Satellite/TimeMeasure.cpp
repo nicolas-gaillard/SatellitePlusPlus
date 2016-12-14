@@ -10,7 +10,7 @@ TimeMeasure::~TimeMeasure(){}
 TimeMeasure::TimeMeasure(std::string iFolder){
     inputFolder = iFolder;
     inputData = "forever_alone.in";
-    outputResults = std::fstream("results.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    outputResults = std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){    
@@ -162,6 +162,7 @@ bool TimeMeasure::createResults(){
     // Normally, the file has been opened during the initialization
     if (outputResults.is_open()) {
 
+        // TXT mode :
         auto mit = resultTabs.begin();
 
          // Ratio : score per time;
@@ -174,6 +175,23 @@ bool TimeMeasure::createResults(){
             outputResults << "Exécutable : " << mit->first << std::endl;
             outputResults << "Temps d'éxécution : " << mit->second.first << " ms" << std::endl;
             outputResults << "Score : " << mit->second.second << " points" << std::endl << std::endl;
+            
+            if (mit->second.first < minTime.second) {
+                minTime.first = mit->first;
+                minTime.second = mit->second.first;
+            }
+
+            if (mit->second.second > maxScore.second) {
+                maxScore.first = mit->first;
+                maxScore.second = mit->second.second;
+            }
+
+            long tmpRatio = static_cast<long>(mit->second.second) / mit->second.first;
+            if (tmpRatio > bestCompromise.second) {
+                bestCompromise.first = mit->first;
+                bestCompromise.second = tmpRatio;
+            }
+            
         }
         
         // Best score :
@@ -196,8 +214,8 @@ bool TimeMeasure::createResults(){
                       << " (" << bestCompromise.second << ")";
 
         
-        
-        // Version CSV :
+        /*
+        // CSV mode :
         outputResults << "Tableaux de résultats \n \n" ;
         outputResults << "Exec, Time, Score \n";
         
@@ -208,6 +226,8 @@ bool TimeMeasure::createResults(){
                           << it->second.first << ","
                           << it->second.second << " \n";
         }
+
+        */
 
 
         // We don't have to close it, destructor does this job. 
