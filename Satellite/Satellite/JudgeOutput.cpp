@@ -32,6 +32,36 @@ bool isInRange(Satelite * sat, Image * im) {
 	return (std::abs(sat->la - im->la) <= sat->maxRot) && (std::abs(sat->lo - im->lo) < sat->maxRot);
 }
 
+
+/*
+Move the given satelite at his position one turn after.
+*/
+void moveSatelite(Satelite * sat) {
+	// Initialize the new coordinates
+	int new_lo = 0;
+	int new_la = 0;
+	int new_speed = 0;
+	// Compute the new coordinates
+	if (sat->la + sat->speed >= -90 * 60 * 60 && sat->la + sat->speed <= 90 * 60 * 60) {
+		new_speed = sat->speed;
+		new_la = sat->la + sat->speed; new_lo = sat->lo - 15;
+	}
+	else if (sat->la + sat->speed>90 * 60 * 60) {
+		new_speed = -sat->speed;
+		new_la = 180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
+	}
+	else if (sat->la + sat->speed < -90 * 60 * 60) {
+		new_speed = -sat->speed;
+		new_la = -180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
+	}
+	if (new_lo < -648000)new_lo += 360 * 60 * 60;
+	if (new_lo > 647999)new_lo -= 360 * 60 * 60;
+	// Set the new coordinates to the satelite
+	sat->lo = new_lo;
+	sat->la = new_la;
+	sat->speed = new_speed;
+}
+
 /*
  * Get the satelite from arraySat with his id
  * return ther satelite
@@ -44,31 +74,22 @@ Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
             return sat;
         }
     }
-    std::cout << "nullptr" << std::endl;
     return nullptr;
 }
 
-Satelite * getSatPosition(Satelite * s,int turn)
-{
-    Satelite * sat;
-    sat->maxRot=s->maxRot;
-    sat->speed=s->speed;
-    sat->speedRot=s->speedRot;
-    if((s->la+s->speed)>=-324000&&(s->la+s->speed)>=-324000)
-        {
-            sat->la=s->la+turn*s->speed;
-            sat->lo=s->lo-turn*15;
-        }
-    else if((s->la+s->speed)>324000)
-        {
-            sat->la=648000-(s->la+turn*s->speed);
-            sat->lo=s->lo-turn*15-648000;
-        }
-    else
-        {
-            sat->la=-648000-(s->la+turn*s->speed);
-            sat->lo=s->lo-turn*15-648000;
-        }
+Satelite * getSatPosition(Satelite * s,int turn) {
+    Satelite * sat = new Satelite();
+
+    sat->la = s->la;
+    sat->lo = s->lo;
+    sat->maxRot = s->maxRot;
+    sat->speed = s->speed;
+    sat->speedRot = s->speedRot;
+
+    for (int i = 0; i < turn; i++) {
+        std::cout << "sat pos " << sat->la << " " << sat->lo << std::endl;
+        moveSatelite(sat);
+    }
     return sat;
 }
 
@@ -110,7 +131,8 @@ bool JudgeOutput::isValidSyntax() {
 
 	// Definition of usefull regular expressions.
 	std::regex number_regex("[[:digit:]]+");
-	std::regex line_regex("-?([[:digit:]]+[[:space:]]){3}[[:digit:]]+");
+	std::regex line_regex("(-?[[:digit:]]+[[:space:]]){2}([[:digit:]]+[[:space:]][[:digit:]]+)");
+
 
 	// Get of the first line
 	std::string line;
@@ -134,7 +156,7 @@ bool JudgeOutput::isValidSyntax() {
 	while (std::getline(*outputFile, line)) {
 		if (!std::regex_match(line, line_regex)) {
 			// Test failed.
-			std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+			std::cout << "[E] Test failed at line " << iter << " :"  << "'" <<line << "'." << std::endl;
 			return false;
 		}
 		else {
@@ -143,7 +165,6 @@ bool JudgeOutput::isValidSyntax() {
 			iter++;
 		}
 	}
-
 
 	// ------- SEMANTICAL CHECK --------
 
@@ -157,7 +178,7 @@ bool JudgeOutput::isValidSyntax() {
 
 	// Test of each line
 	for (int i = 0; i < picturesNb; i++)
-	{
+	{  
 		splitStr(pictureArray[i], ' ', elems);
 		try
 		{
@@ -173,7 +194,10 @@ bool JudgeOutput::isValidSyntax() {
 		if ((la < -306000) || (la > 306000) || (lo < -648000) || (lo > 647999) || (tu > maxTurns) || (tu < 0) || (sa+1 > satNb) || (sa < 0)) {
 			return false;
 		}
+        elems.clear();
 	}
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
 	return true;
 }
 
@@ -186,6 +210,7 @@ bool JudgeOutput::isValidImages() {
     Satelite * sat;
     int turn;
     std::string line;
+    bool b = true;
 
     // Get the array satelite and number of it
     Satelite * arraySat = this->simData->getArraySat();
@@ -198,7 +223,9 @@ bool JudgeOutput::isValidImages() {
 
     // To compare in the for (first id is 0)
     sat->id = -1;
-
+    
+    
+    // Browse all the images and check if it could have been taken by the satelite
     for (int i = 0; i < nbImageTaken; i++) {
         img = new Image();
         std::getline(*outputFile, line);
@@ -210,22 +237,27 @@ bool JudgeOutput::isValidImages() {
 
         turn = std::stoi(elems[2]);
 
+        std::cout << img->la << std::endl;
+        
         // Change the satelite only if it different
         if (sat->id != std::stoi(elems[3])) {
             // Get the satelite from arraySat with his ID
             sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
         }
-
+       // std::cout << sat->la << " " << sat->lo << std::endl;
+       // std::cout << "Test at turn " << turn << " with image " << img->la << " " << img->lo << std::endl;
          // Test the current image
         if (!isValidImage(turn, img, sat)) {
-            return false;
+            std::cout << "image not valid" << std::endl;            
+            b = false;
+            break;
         }
         elems.clear();
     }
     // Get back to the beginning of the file
     outputFile->clear();
     outputFile->seekg(0, std::ios::beg);
-    return true;
+    return b;
 }
 
 /*
