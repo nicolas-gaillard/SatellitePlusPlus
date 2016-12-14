@@ -10,7 +10,7 @@ TimeMeasure::~TimeMeasure(){}
 TimeMeasure::TimeMeasure(std::string iFolder){
     inputFolder = iFolder;
     inputData = "forever_alone.in";
-    outputResults = std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    outputResults = std::fstream("results.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){    
@@ -194,6 +194,20 @@ bool TimeMeasure::createResults(){
                       << "Meilleure solution globale (meilleur ratio) : "
                       << bestCompromise.first
                       << " (" << bestCompromise.second << ")";
+
+        
+        
+        // Version CSV :
+        outputResults << "Tableaux de résultats \n \n" ;
+        outputResults << "Exec, Time, Score \n";
+        
+        auto it = resultTabs.begin();
+
+        for (; it != resultTabs.end(); it++){
+            outputResults << it->first << "," 
+                          << it->second.first << ","
+                          << it->second.second << " \n";
+        }
 
 
         // We don't have to close it, destructor does this job. 
