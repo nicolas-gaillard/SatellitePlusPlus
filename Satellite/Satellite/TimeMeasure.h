@@ -58,7 +58,4 @@ public:
 	// Creates the file where all the results are displayed :
 	bool createResults();
 	// search : ascii art c++
-
-	// Determines which executable is the most efficient  
-	void whoIsTheBest();
 };

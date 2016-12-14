@@ -78,15 +78,15 @@ int main(int argc, char *argv[]) {
 	myMap["titi"] = std::make_pair(12, 97);
 	myMap["tutu"] = std::make_pair(12, 12);
 
-	for (auto &it : myMap) {
-		std::cout << it.first << std::endl;
-		toto << it.first << std::endl;
+	for (auto it = myMap.begin(); it != myMap.end(); it++) {
+		std::cout << it->first << std::endl;
+		toto << it->first << std::endl;
 		
-		std::cout << it.second.first << std::endl;
-		toto << it.second.first << std::endl;
+		std::cout << it->second.first << std::endl;
+		toto << it->second.first << std::endl;
 
-		std::cout << it.second.second << std::endl;
-		toto << it.second.second << std::endl;
+		std::cout << it->second.second << std::endl;
+		toto << it->second.second << std::endl;
 	
 	}
 }

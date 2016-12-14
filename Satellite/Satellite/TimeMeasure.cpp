@@ -25,6 +25,12 @@ TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iD
  * Output : execution time in milliseconds
  */
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
+
+    /*
+     * TODO :
+     *   - Changer l'ordre de grandeur des mesures 
+     */
+
     auto start = std::chrono::high_resolution_clock::now();
 
     // Launch the solution :
@@ -155,16 +161,20 @@ bool TimeMeasure::executeFolder(){
 bool TimeMeasure::createResults(){
     // Normally, the file has been opened during the initialization
     if (outputResults.is_open()) {
-        for (auto &mit : resultTabs) {
-            outputResults << "Exécutable : " << mit.first << std::endl;
-            outputResults << "Temps d'éxécution : " << mit.second.first << " ms" << std::endl;
-            outputResults << "Score : " << mit.second.second << " points" << std::endl << std::endl;
+
+        auto mit = resultTabs.begin();
+        
+        for (; mit != resultTabs.end(); mit++){
+            outputResults << "Exécutable : " << mit->first << std::endl;
+            outputResults << "Temps d'éxécution : " << mit->second.first << " ms" << std::endl;
+            outputResults << "Score : " << mit->second.second << " points" << std::endl << std::endl;
         }
-
-        // whoIsTheBest should be call here
-
-        // We don't have to close it, destructor does its job. 
+        
+        // We don't have to close it, destructor does this job. 
         // outputResults.close();
+
+        outputResults << std::endl << std::endl;
+        outputResults << "Meilleure solution en terme de score ";
 
         return true;
     }
