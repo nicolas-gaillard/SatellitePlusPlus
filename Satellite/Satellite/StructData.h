@@ -6,6 +6,7 @@ struct Image
 {
 	long la;
 	long lo;
+	bool taken;
 };
 
 struct Satelite

@@ -124,7 +124,7 @@ Image *  DataReceiver::extractImage(int nb) {
 
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
-
+		tmp->taken = false;
 		arrayImage[i] = *tmp;
 		elems.clear();
 	}

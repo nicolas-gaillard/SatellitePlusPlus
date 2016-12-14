@@ -125,9 +125,10 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 					// Yes, so we can iterate through all its images.
 					for (int k = 0; k < coll.nbImg; k++) {
 						// If the image can be shot, and there is no conflict, then we take the picture.
-						if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn)) {
+						if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn)&&!coll.listImg[k].taken) {
 
 							// We set the last shot of the satelite to be this picture, at this turn.
+							coll.listImg[k].taken = true;
 							Image tmp_im = coll.listImg[k];
 							tmp_im.la = sat->la - coll.listImg[k].la;
 							tmp_im.lo = sat->lo - coll.listImg[k].lo;
