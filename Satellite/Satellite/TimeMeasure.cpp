@@ -163,6 +163,12 @@ bool TimeMeasure::createResults(){
     if (outputResults.is_open()) {
 
         auto mit = resultTabs.begin();
+
+         // Ratio : score per time;
+        long ratio = static_cast<long>(mit->second.second) / mit->second.first;
+        std::pair<std::string, long> bestCompromise(mit->first, ratio);
+        std::pair<std::string, int> maxScore(mit->first, mit->second.second);
+        std::pair<std::string, long> minTime(mit->first, mit->second.first);
         
         for (; mit != resultTabs.end(); mit++){
             outputResults << "Exécutable : " << mit->first << std::endl;
@@ -170,18 +176,31 @@ bool TimeMeasure::createResults(){
             outputResults << "Score : " << mit->second.second << " points" << std::endl << std::endl;
         }
         
+        // Best score :
+        outputResults << std::endl << std::endl 
+                      << "Meilleure solution en terme de score : " 
+                      << maxScore.first
+                      << " (" << maxScore.second << " points)";
+
+        // Best time :
+        outputResults << std::endl << std::endl 
+                      << "Meilleure solution en terme de temps : "
+                      << minTime.first
+                      << " (" << minTime.second << " ms)";
+                      // time unit will change
+
+        // Best ratio :
+        outputResults << std::endl << std::endl
+                      << "Meilleure solution globale (meilleur ratio) : "
+                      << bestCompromise.first
+                      << " (" << bestCompromise.second << ")";
+
+
         // We don't have to close it, destructor does this job. 
         // outputResults.close();
-
-        outputResults << std::endl << std::endl;
-        outputResults << "Meilleure solution en terme de score ";
 
         return true;
     }
 
     return false;
-}
-
-void whoIsTheBest(){
-
 }
