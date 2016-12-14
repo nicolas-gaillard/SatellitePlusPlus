@@ -196,8 +196,8 @@ bool JudgeOutput::isValidImages() {
     std::vector<std::string> elems;
 	int nbImageTaken = std::stoi(line);
 
-    // To compare in the for (first id is 1)
-    sat->id = 0;
+    // To compare in the for (first id is 0)
+    sat->id = -1;
 
     for (int i = 0; i < nbImageTaken; i++) {
         img = new Image();
