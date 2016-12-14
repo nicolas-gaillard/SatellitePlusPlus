@@ -95,6 +95,8 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";
 
+		tmp->isValid = true;
+
 		arrayCollection[i] = *tmp;
 		elems.clear();
 	}

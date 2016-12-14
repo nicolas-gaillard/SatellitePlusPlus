@@ -9,6 +9,8 @@
 NaiveResolver::NaiveResolver(SimulationData * simDat, std::string filename) {
 	simData = simDat;
 	outFilename = filename;
+	initialData = new Satelite[simData->getNbSatelite()];
+	memcpy(initialData, simData->getArraySat(), sizeof(Satelite)*simData->getNbSatelite());
 }
 
 /*
@@ -101,6 +103,56 @@ void moveSatelite(Satelite * sat) {
 
 }
 
+void NaiveResolver::resetTakenPictures() {
+	int colNb = simData->getNbCollection();
+
+	for (int i = 0; i < colNb; i++)
+	{
+		Collection * coll = &simData->getArrayCol()[i];
+
+		if (coll->isValid) {
+			int picNb = coll->nbImg;
+
+			for (int j = 0; j < picNb; j++)
+			{
+				coll->listImg[j].taken = false;
+			}
+		}
+	}
+
+}
+
+bool NaiveResolver::checkUncompleteCollections() {
+
+	int colNb = simData->getNbCollection();
+
+	bool hasChanged = false;
+
+	for (int i = 0; i < colNb; i++)
+	{
+		Collection * coll = &simData->getArrayCol()[i];
+
+		if (coll->isValid) {
+			int picNb = coll->nbImg;
+
+			bool valid = true;
+
+			for (int j = 0; j < picNb; j++)
+			{
+				if (!coll->listImg[j].taken) {
+					valid = false;
+					hasChanged = true;
+					break;
+				}
+			}
+
+			coll->isValid = valid;
+		}
+	}
+
+	return hasChanged;
+
+}
 
 void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result) {
 	int maxTurns = simData->getDuration();
@@ -118,31 +170,38 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 			// We get the current satelite, for better understanding
 			// ... for each existing collection ...
 			for (int j = 0; j < colNb; j++) {
+				
 				// We get the current collection for better understanding
 				Collection coll = simData->getArrayCol()[j];
-				// Is the right time to take a picture in this collection ?
-				if (isInTimeStamp(turn, coll)) {
-					// Yes, so we can iterate through all its images.
-					for (int k = 0; k < coll.nbImg; k++) {
-						// If the image can be shot, and there is no conflict, then we take the picture.
-						if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn)&&!coll.listImg[k].taken) {
+				
+				if (coll.isValid) {
+					
+					// Is the right time to take a picture in this collection ?
+					if (isInTimeStamp(turn, coll)) {
+						// Yes, so we can iterate through all its images.
+						for (int k = 0; k < coll.nbImg; k++) {
+							// If the image can be shot, and there is no conflict, then we take the picture.
+							if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn) && !coll.listImg[k].taken) {
 
-							// We set the last shot of the satelite to be this picture, at this turn.
-							coll.listImg[k].taken = true;
-							Image tmp_im = coll.listImg[k];
-							tmp_im.la = sat->la - coll.listImg[k].la;
-							tmp_im.lo = sat->lo - coll.listImg[k].lo;
-							sat->lastShotRelativePosition = &tmp_im;
-							sat->lastShotTurn = turn;
+								// We set the last shot of the satelite to be this picture, at this turn.
+								coll.listImg[k].taken = true;
+								Image tmp_im = coll.listImg[k];
+								tmp_im.la = sat->la - coll.listImg[k].la;
+								tmp_im.lo = sat->lo - coll.listImg[k].lo;
+								sat->lastShotRelativePosition = &tmp_im;
+								sat->lastShotTurn = turn;
 
-							// And we save the result in our result string.
-							result[i] += std::to_string(coll.listImg[k].la) + " ";
-							result[i] += std::to_string(coll.listImg[k].lo) + " ";
-							result[i] += "" + std::to_string(turn);
-							result[i] += " " + std::to_string(x);
-							result[i] += '\n';
-							// we don't forget to increment the number of pictures taken, isn't it ?
-							nbPict++;
+								// And we save the result in our result string.
+								result[i] += std::to_string(coll.listImg[k].la) + " ";
+								result[i] += std::to_string(coll.listImg[k].lo) + " ";
+								result[i] += "" + std::to_string(turn);
+								result[i] += " " + std::to_string(x);
+								result[i] += '\n';
+								// we don't forget to increment the number of pictures taken, isn't it ?
+								nbPict++;
+
+								
+							}
 						}
 					}
 				}
@@ -156,6 +215,7 @@ void NaiveResolver::threadResolv(int i, int n ,bool verbose,std::string * result
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> diff = end - start;
 			std::cout << " satelite  " << x << " thread no " << i << "/" << n << " time elapsed " << diff.count() << " s\n";
+			std::cout << "[I] Number of picture taken : " << nbPict << std::endl;
 		}
 
 	}
@@ -169,24 +229,48 @@ void NaiveResolver::launchResolution(bool verbose) {
 	std::thread *t = new std::thread[tmp];
 	NaiveResolver * th = this;
 
-	// Initialize the variables which stores the resulting data
-	std::string * result = new std::string[tmp] ;
+	
 
 	if (verbose) {
 		std::cout << "[I] Start simulation ..." << std::endl;
 		std::cout << "\r[I] Complete : 0%";
 	}
 
-	for (int i = 0; i < tmp; i++) {
-		result[i] = std::string();
-		t[i] = std::thread([&th, i, tmp,result,verbose]() { th->threadResolv(i, tmp,verbose,result); });
-	}
-	for (size_t i = 0; i < tmp; i++)
-	{
-		t[i].join();
-	}
+	// And we launch the simulation.
 
+	bool redoSimulation = true;
+	int pass = 1;
 
+	std::string * result = new std::string[tmp];
+
+	while (redoSimulation) {
+
+		if (pass > 1) {
+			resetTakenPictures();
+		}
+
+		// Initialize the variables which stores the resulting data
+		result = new std::string[tmp];
+
+		nbPict = 0;
+
+		//if (verbose)
+			std::cout << "[I] Pass nb " << pass << std::endl;
+
+		for (int i = 0; i < tmp; i++) {
+			result[i] = std::string();
+			t[i] = std::thread([&th, i, tmp, result, verbose]() { th->threadResolv(i, tmp, verbose, result); });
+		}
+		for (size_t i = 0; i < tmp; i++)
+		{
+			t[i].join();
+		}
+
+		redoSimulation = checkUncompleteCollections();
+		memcpy(simData->getArraySat(), initialData, sizeof(Satelite)*simData->getNbSatelite());
+
+		pass++;
+	}
 	
 	// When the simulation is over, we write in the output file.
 	std::ofstream myfile;
