@@ -7,6 +7,7 @@ struct Image
 	long la;
 	long lo;
 	int nbSat;
+	bool taken;
 };
 
 struct Satelite
@@ -33,7 +34,16 @@ struct Collection
 	int nbTimeSt;
 	TimeStamp * listTimeSt;
 	Image * listImg;
+	int nbPtsLeft;
 	bool doable;
 
 };
 
+
+struct Result
+{
+	Image * img;
+	int la;
+	int lo;
+	int turn;
+};

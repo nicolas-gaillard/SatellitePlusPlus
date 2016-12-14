@@ -92,6 +92,7 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->nbImg = atoi(elems[1].c_str());
 		tmp->nbTimeSt = atoi(elems[2].c_str());
 		tmp->doable = true;
+		tmp->nbPtsLeft = tmp->nbPts;
 		tmp->listImg = this->extractImage(tmp->nbImg);
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";
