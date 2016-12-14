@@ -35,7 +35,7 @@ bool isInRange(Satelite * sat, Image * im) {
 
 
 /*
-Move the given satelite at his position one turn after.
+* Move the given satelite at his position one turn after.
 */
 void moveSatelite(Satelite * sat) {
 	// Initialize the new coordinates
@@ -65,7 +65,7 @@ void moveSatelite(Satelite * sat) {
 
 /*
  * Get the satelite from arraySat with his id
- * return ther satelite
+ * return the satelite
 */
 Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
     Satelite * sat;
@@ -78,7 +78,12 @@ Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
     return nullptr;
 }
 
-Satelite * getSatPosition(Satelite * s,int turn) {
+/*
+ * Give the position of a satelite at turn t 
+ * Satelite s have to be in initial position
+ * Return a new satelite with a new position 
+*/
+Satelite * getSatPosition(Satelite * s,int t) {
     Satelite * sat = new Satelite();
 
     sat->la = s->la;
@@ -87,7 +92,7 @@ Satelite * getSatPosition(Satelite * s,int turn) {
     sat->speed = s->speed;
     sat->speedRot = s->speedRot;
 
-    for (int i = 0; i < turn; i++) {
+    for (int i = 0; i < t; i++) {
         moveSatelite(sat);
     }
     return sat;
