@@ -10,7 +10,7 @@ public:
 
 	bool isValidOutput();
 	bool isValidImages();
-    bool isValidFormat();
+    bool isValidSyntax();
     bool isValidImage(int turn, Image * img, Satelite * sat);
 	bool isValidCamera();
     int getScore();

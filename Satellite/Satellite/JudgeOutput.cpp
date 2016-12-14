@@ -90,41 +90,91 @@ JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
  * Return true if valid, false otherwise
 */
 bool JudgeOutput::isValidOutput() {
-    return ((isValidFormat())&&(isValidImages()));
+    return ((isValidSyntax())&&(isValidImages()));
 }
 
 /* 
- * Check if the file format is valid
+ * Check if the file format syntax is valid. Check the semantic too
+ * maxPictures: the number of pictures of the input file
+ * maxTurns: number of the turn of the simulation
+ * satNb: number of satelite in the simulation
  * Return true if valid, false otherwise
 */
-bool JudgeOutput::isValidFormat() {
-    // CHECK THE SYNTAX : regex
-    // First line : only a digit (number of pictures taken)
-    std::regex first_line("[[:digit:]]+");
-    // The other lines : image i taken by satellite s at turn t
-    std::regex line_regex("(-?[[:digit:]]+[[:space:]]){2}([[:digit:]]+[[:space:]])[[:digit:]]+");
+bool JudgeOutput::isValidSyntax() {
+    long maxTurns = simData->getDuration();
+    int satNb = simData->getNbSatelite();
+    int maxPictures = simData->getNbCollection();
 
-    // Get the first line
+
+	// ----- SYNTAX CHECK -----
+
+	// Definition of usefull regular expressions.
+	std::regex number_regex("[[:digit:]]+");
+	std::regex line_regex("-?([[:digit:]]+[[:space:]]){3}[[:digit:]]+");
+
+	// Get of the first line
 	std::string line;
 	std::getline(*outputFile, line);
 
-    // Check the first line
-    if (!regex_match(line, first_line)) {
-        std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
-        return false;
-    }
+	// Test of the first line
+	if (!std::regex_match(line, number_regex)) {
+		// Test failed.
+		std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+		return false;
+	}
 
-    // Check the other lines
-    while (std::getline(*outputFile, line)) {
-        if (!regex_match(line, line_regex)) {
-            std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
-            return false;
-        }
-    }
-    // Back to the beginning of the file
-    outputFile->clear();
-    outputFile->seekg(0, std::ios::beg);
-    return true;
+	// Convert number after check pass
+	int picturesNb = std::stoi(line);
+
+	// Creation of the picture array
+	std::string * pictureArray = new std::string[picturesNb];
+
+	// Test of each line
+	int iter = 0;
+	while (std::getline(*outputFile, line)) {
+		if (!std::regex_match(line, line_regex)) {
+			// Test failed.
+			std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+			return false;
+		}
+		else {
+			// Test success : line saved.
+			pictureArray[iter] = line;
+			iter++;
+		}
+	}
+
+
+	// ------- SEMANTICAL CHECK --------
+
+	// Test of the number of pictures
+	if (picturesNb > maxPictures || picturesNb <= 0) {
+		return false;
+	}
+
+	std::vector<std::string> elems;
+	int la, lo, tu, sa;
+
+	// Test of each line
+	for (int i = 0; i < picturesNb; i++)
+	{
+		splitStr(pictureArray[i], ' ', elems);
+		try
+		{
+			la = std::stoi(elems[0]);
+			lo = std::stoi(elems[1]);
+			tu = std::stoi(elems[2]);
+			sa = std::stoi(elems[3]);
+		}
+		catch (const std::exception&)
+		{
+			return false;
+		}
+		if ((la < -306000) || (la > 306000) || (lo < -648000) || (lo > 647999) || (tu > maxTurns) || (tu < 0) || (sa+1 > satNb) || (sa < 0)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /*
