@@ -1,5 +1,6 @@
 #include "JudgeOutput.h"
 #include <iostream>
+#include <cstdio>
 #include <regex>
 
 void splitStr(const std::string &s, char delim, std::vector<std::string> &elems) {
@@ -87,7 +88,6 @@ Satelite * getSatPosition(Satelite * s,int turn) {
     sat->speedRot = s->speedRot;
 
     for (int i = 0; i < turn; i++) {
-        std::cout << "sat pos " << sat->la << " " << sat->lo << std::endl;
         moveSatelite(sat);
     }
     return sat;
@@ -110,7 +110,7 @@ JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
     * No satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
  * Return true if valid, false otherwise
 */
-bool JudgeOutput::isValidOutput() {
+bool JudgeOutput::isValidOutput() {  
     return ((isValidSyntax())&&(isValidImages()));
 }
 
@@ -205,9 +205,9 @@ bool JudgeOutput::isValidSyntax() {
  * Check all the images of the output
  * Return true if all images are valid, false otherwise
 */
-bool JudgeOutput::isValidImages() {
+bool JudgeOutput::isValidImages() {    
     Image * img;
-    Satelite * sat;
+    Satelite * sat = new Satelite();
     int turn;
     std::string line;
     bool b = true;
@@ -237,21 +237,20 @@ bool JudgeOutput::isValidImages() {
 
         turn = std::stoi(elems[2]);
 
-        std::cout << img->la << std::endl;
-        
         // Change the satelite only if it different
         if (sat->id != std::stoi(elems[3])) {
             // Get the satelite from arraySat with his ID
             sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
         }
        // std::cout << sat->la << " " << sat->lo << std::endl;
-       // std::cout << "Test at turn " << turn << " with image " << img->la << " " << img->lo << std::endl;
+        //std::cout << "Test at turn " << turn << " with image " << img->la << " " << img->lo <<  " with sat ";
          // Test the current image
         if (!isValidImage(turn, img, sat)) {
-            std::cout << "image not valid" << std::endl;            
+            //std::cout << "[E] image not valid" << std::endl;
             b = false;
             break;
         }
+       // std::cout << "[V] image ok" << std::endl;
         elems.clear();
     }
     // Get back to the beginning of the file
