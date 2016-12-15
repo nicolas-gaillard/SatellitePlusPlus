@@ -163,8 +163,10 @@ TimeStamp *  DataReceiver::extractTimeStamp(int nb) {
 
 
 Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int threshold){
+	// Get the original number of collection
 	Collection * oldArrayCol = this->extractCollection(Sd);
 	
+	// Create a temporary vector to sort each collection 
 	std::vector<Collection> vecCollection;
 
 	std::cout << "Old size : " << Sd->getNbCollection() << std::endl;
@@ -174,17 +176,20 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 		vecCollection.push_back(oldArrayCol[i]);
 	}
 
+	// Sort the vector 
 	std::sort(vecCollection.begin(), vecCollection.end(), 
 			[](const Collection &a, const Collection &b) -> bool
 				{ 
 					return ((a.nbPts/(a.nbImg*1) > (b.nbPts/ (a.nbImg*1))));
 				}
 			);
-
+	
+	// New size after removing :
 	int newSize = static_cast<int>(static_cast<float>(vecCollection.size()) * (1.0 - static_cast<float>(threshold)/100.0));
 	
 	std::cout << "New size : " << newSize << std::endl;
-	
+
+	// Set a new collection pointer	
 	Sd->setNbCollection(newSize);
 
 	Collection * arrayCollection = new Collection[newSize];
