@@ -15,7 +15,7 @@ int main() {
 	std::cout << "[I] Starting naive resolution..." << std::endl;
 
 	std::cout << "[I] Reading data from  '" << filename << "'... " << std::endl;
-	for (size_t i = 5; i < 20; i=i+5)
+	for (size_t i = 20; i < 50; i=i+5)
 	{
 		std::string outfilename = "text/" +std::to_string(i)+"weekend.out";
 		DataReceiver * dataReceiver = new DataReceiver(filename,i);
