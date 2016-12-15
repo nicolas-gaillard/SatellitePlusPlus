@@ -11,7 +11,7 @@
 class DataReceiver
 {
 public:
-	DataReceiver(std::string filename);
+	DataReceiver(std::string filename,int percent);
 	~DataReceiver();
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
@@ -23,5 +23,7 @@ public:
 
 private:
 	std::ifstream * infile;
+	int percent;
+
 
 };

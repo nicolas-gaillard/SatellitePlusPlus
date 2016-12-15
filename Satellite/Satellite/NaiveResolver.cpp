@@ -243,7 +243,7 @@ void NaiveResolver::launchResolution(bool verbose) {
 
 	std::string * result = new std::string[tmp];
 
-	while (redoSimulation) {
+	//while (redoSimulation) {
 
 		if (pass > 1) {
 			resetTakenPictures();
@@ -270,7 +270,7 @@ void NaiveResolver::launchResolution(bool verbose) {
 		memcpy(simData->getArraySat(), initialData, sizeof(Satelite)*simData->getNbSatelite());
 
 		pass++;
-	}
+	//}
 	
 	// When the simulation is over, we write in the output file.
 	std::ofstream myfile;

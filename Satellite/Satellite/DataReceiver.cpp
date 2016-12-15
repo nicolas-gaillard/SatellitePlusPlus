@@ -1,6 +1,5 @@
 #include "DataReceiver.h"
 
-
 void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	std::stringstream ss;
 	ss.str(s);
@@ -10,9 +9,10 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	}
 }
 
-DataReceiver::DataReceiver(std::string filename)
+DataReceiver::DataReceiver(std::string filename,int percent)
 {
 	infile =  new std::ifstream(filename);
+	this->percent = percent;
 }
 
 SimulationData DataReceiver::extractData() {
@@ -26,7 +26,7 @@ SimulationData DataReceiver::extractData() {
 	getline(*infile, line);
 	tmpData.setDuration(atoi(line.c_str()));
 	tmpData.setArraySat(this->extractSatelite(&tmpData));
-	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, 20));
+	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, percent));
 
 	
 	return tmpData;
@@ -177,7 +177,7 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 	std::sort(vecCollection.begin(), vecCollection.end(), 
 			[](const Collection &a, const Collection &b) -> bool
 				{ 
-					return ((a.nbPts/a.nbImg) > (b.nbPts/b.nbImg));
+					return ((a.nbPts/(a.nbImg*1) > (b.nbPts/ (a.nbImg*1))));
 				}
 			);
 
