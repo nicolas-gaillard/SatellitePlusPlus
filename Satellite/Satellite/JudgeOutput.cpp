@@ -1,77 +1,7 @@
 #include "JudgeOutput.h"
 #include <iostream>
+#include <cstdio>
 #include <regex>
-
-void splitStr(const std::string &s, char delim, std::vector<std::string> &elems) {
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-}
-
-/*
- * Check if images contains img
- * Return true if, false otherwise
- */
-bool contains(std::vector<Image> &images, Image img) {
-    std::vector<Image>::iterator it;
-    for(it=images.begin() ; it < images.end(); it++) {
-        if (((*it).la == img.la)&&((*it).lo == img.lo)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/*
- * Check if an image can be taken by a satelite
-*/
-bool isInRange(Satelite * sat, Image * im) {
-	return (std::abs(sat->la - im->la) <= sat->maxRot) && (std::abs(sat->lo - im->lo) < sat->maxRot);
-}
-
-/*
- * Get the satelite from arraySat with his id
- * return ther satelite
-*/
-Satelite * getSat(Satelite * arraySat, int nbSat, int id) {
-    Satelite * sat;
-    for (int i = 0; i < nbSat; i++) {
-        sat = &arraySat[i];
-        if (sat->id == id) {
-            return sat;
-        }
-    }
-    std::cout << "nullptr" << std::endl;
-    return nullptr;
-}
-
-Satelite * getSatPosition(Satelite * s,int turn)
-{
-    Satelite * sat;
-    sat->maxRot=s->maxRot;
-    sat->speed=s->speed;
-    sat->speedRot=s->speedRot;
-    if((s->la+s->speed)>=-324000&&(s->la+s->speed)>=-324000)
-        {
-            sat->la=s->la+turn*s->speed;
-            sat->lo=s->lo-turn*15;
-        }
-    else if((s->la+s->speed)>324000)
-        {
-            sat->la=648000-(s->la+turn*s->speed);
-            sat->lo=s->lo-turn*15-648000;
-        }
-    else
-        {
-            sat->la=-648000-(s->la+turn*s->speed);
-            sat->lo=s->lo-turn*15-648000;
-        }
-    return sat;
-}
-
 
 /*
  * Contructor 
@@ -89,7 +19,7 @@ JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
     * No satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
  * Return true if valid, false otherwise
 */
-bool JudgeOutput::isValidOutput() {
+bool JudgeOutput::isValidOutput() {  
     return ((isValidSyntax())&&(isValidImages()));
 }
 
@@ -110,7 +40,8 @@ bool JudgeOutput::isValidSyntax() {
 
 	// Definition of usefull regular expressions.
 	std::regex number_regex("[[:digit:]]+");
-	std::regex line_regex("-?([[:digit:]]+[[:space:]]){3}[[:digit:]]+");
+	std::regex line_regex("(-?[[:digit:]]+[[:space:]]){2}([[:digit:]]+[[:space:]][[:digit:]]+)");
+
 
 	// Get of the first line
 	std::string line;
@@ -134,7 +65,7 @@ bool JudgeOutput::isValidSyntax() {
 	while (std::getline(*outputFile, line)) {
 		if (!std::regex_match(line, line_regex)) {
 			// Test failed.
-			std::cout << "[E] Test failed at line : '" << line << "'." << std::endl;
+			std::cout << "[E] Test failed at line " << iter << " :"  << "'" <<line << "'." << std::endl;
 			return false;
 		}
 		else {
@@ -143,7 +74,6 @@ bool JudgeOutput::isValidSyntax() {
 			iter++;
 		}
 	}
-
 
 	// ------- SEMANTICAL CHECK --------
 
@@ -157,7 +87,7 @@ bool JudgeOutput::isValidSyntax() {
 
 	// Test of each line
 	for (int i = 0; i < picturesNb; i++)
-	{
+	{  
 		splitStr(pictureArray[i], ' ', elems);
 		try
 		{
@@ -173,7 +103,10 @@ bool JudgeOutput::isValidSyntax() {
 		if ((la < -306000) || (la > 306000) || (lo < -648000) || (lo > 647999) || (tu > maxTurns) || (tu < 0) || (sa+1 > satNb) || (sa < 0)) {
 			return false;
 		}
+        elems.clear();
 	}
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
 	return true;
 }
 
@@ -181,11 +114,12 @@ bool JudgeOutput::isValidSyntax() {
  * Check all the images of the output
  * Return true if all images are valid, false otherwise
 */
-bool JudgeOutput::isValidImages() {
+bool JudgeOutput::isValidImages() {    
     Image * img;
-    Satelite * sat;
+    Satelite * sat = new Satelite();
     int turn;
     std::string line;
+    bool b = true;
 
     // Get the array satelite and number of it
     Satelite * arraySat = this->simData->getArraySat();
@@ -198,7 +132,9 @@ bool JudgeOutput::isValidImages() {
 
     // To compare in the for (first id is 0)
     sat->id = -1;
-
+    
+    
+    // Browse all the images and check if it could have been taken by the satelite
     for (int i = 0; i < nbImageTaken; i++) {
         img = new Image();
         std::getline(*outputFile, line);
@@ -215,17 +151,21 @@ bool JudgeOutput::isValidImages() {
             // Get the satelite from arraySat with his ID
             sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
         }
-
+       // std::cout << sat->la << " " << sat->lo << std::endl;
+        //std::cout << "Test at turn " << turn << " with image " << img->la << " " << img->lo <<  " with sat ";
          // Test the current image
         if (!isValidImage(turn, img, sat)) {
-            return false;
+            //std::cout << "[E] image not valid" << std::endl;
+            b = false;
+            break;
         }
+       // std::cout << "[V] image ok" << std::endl;
         elems.clear();
     }
     // Get back to the beginning of the file
     outputFile->clear();
     outputFile->seekg(0, std::ios::beg);
-    return true;
+    return b;
 }
 
 /*

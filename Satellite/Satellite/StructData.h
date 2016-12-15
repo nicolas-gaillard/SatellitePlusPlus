@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-
-
 struct Satelite
 {
 	int id;
@@ -12,7 +10,6 @@ struct Satelite
 	int speedRot;
 	int maxRot;
 };
-
 
 struct Image
 {
@@ -34,4 +31,3 @@ struct Collection
 	TimeStamp * listTimeSt;
 	Image * listImg;
 };
-
