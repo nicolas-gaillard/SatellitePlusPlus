@@ -268,6 +268,11 @@ std::vector<Image> JudgeOutput::getImagesTaken() {
     return imgs;
 }
 
+bool JudgeOutput::isValidCamera()
+{
+    return false;
+}
+
 /*
  * Get the score of the simulation 
  * Return the score
