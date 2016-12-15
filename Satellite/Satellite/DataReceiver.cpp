@@ -167,7 +167,7 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 	
 	std::vector<Collection> vecCollection;
 
-	std::cout << Sd->getNbCollection() << std::endl;
+	std::cout << "Old size : " << Sd->getNbCollection() << std::endl;
 
 	for (int i = 0; i < Sd->getNbCollection(); i++)
 	{
@@ -183,7 +183,7 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 
 	int newSize = static_cast<int>(static_cast<float>(vecCollection.size()) * (1.0 - static_cast<float>(threshold)/100.0));
 	
-	std::cout << newSize << std::endl;
+	std::cout << "New size : " << newSize << std::endl;
 	
 	Sd->setNbCollection(newSize);
 
