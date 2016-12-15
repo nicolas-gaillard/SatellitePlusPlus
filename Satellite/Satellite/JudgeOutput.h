@@ -15,6 +15,7 @@ public:
 	bool isValidCamera();
     int getScore();
 	std::vector<Image> getImagesTaken();
+    
 
 private:
 	std::ifstream * outputFile;
