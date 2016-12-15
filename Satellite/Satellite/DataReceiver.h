@@ -18,6 +18,8 @@ public:
 	Image * extractImage(int nb);
 	TimeStamp * extractTimeStamp(int nb);
 
+	Collection * optiExtractCollection(SimulationData * Sd, int threshold);
+
 private:
 	std::ifstream * infile;
 

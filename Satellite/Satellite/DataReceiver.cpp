@@ -26,7 +26,7 @@ SimulationData DataReceiver::extractData() {
 	getline(*infile, line);
 	tmpData.setDuration(atoi(line.c_str()));
 	tmpData.setArraySat(this->extractSatelite(&tmpData));
-	tmpData.setArrayCol(this->extractCollection(&tmpData));
+	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, 20));
 
 	
 	return tmpData;
@@ -162,3 +162,33 @@ TimeStamp *  DataReceiver::extractTimeStamp(int nb) {
 }
 
 
+Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int threshold){
+	Collection * oldArrayCol = this->extractCollection(Sd);
+	
+	std::vector<Collection> vecCollection;
+
+	std::cout << Sd->getNbCollection() << std::endl;
+
+	for (int i = 0; i < Sd->getNbCollection(); i++)
+	{
+		vecCollection.push_back(oldArrayCol[i]);
+	}
+
+	std::sort(vecCollection.begin(), vecCollection.end(), 
+			[](const Collection &a, const Collection &b) -> bool
+				{ 
+					return ((a.nbPts/a.nbImg) > (b.nbPts/b.nbImg));
+				}
+			);
+
+	int newSize = static_cast<int>(static_cast<float>(vecCollection.size()) * (1.0 - static_cast<float>(threshold)/100.0));
+
+	Collection * arrayCollection = new Collection[newSize];
+
+	for (int j = 0; j < newSize; j++)
+	{
+		arrayCollection[j] = vecCollection[j]; 
+	}
+
+	return arrayCollection;
+}
