@@ -19,7 +19,9 @@ public:
 	Image * extractImage(int nb);
 	TimeStamp * extractTimeStamp(int nb);
 
+	// Remove a percentage of collection (according to its score and its number of points) 
 	Collection * optiExtractCollection(SimulationData * Sd, int threshold);
+	// (Threshold in percent)
 
 private:
 	std::ifstream * infile;
