@@ -13,6 +13,14 @@ JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
 }
 
 /*
+ * Get back to the beginning of the file
+*/ 
+void JudgeOutput::goBackToBeginningOutput() {
+    outputFile->clear();
+    outputFile->seekg(0, std::ios::beg);
+}
+
+/*
  * Check if the output file is valid :
     * The format of the output file matches the description.
     * Each picture is in range of the corresponding satellite when it’s taken.
@@ -20,7 +28,7 @@ JudgeOutput::JudgeOutput(std::string outFileName, SimulationData * s) {
  * Return true if valid, false otherwise
 */
 bool JudgeOutput::isValidOutput() {  
-    return ((isValidSyntax())&&(isValidImages()));
+    return ((isValidSyntax())&&(isValidImages())&&(isValidCamera()));
 }
 
 /* 
@@ -105,8 +113,7 @@ bool JudgeOutput::isValidSyntax() {
 		}
         elems.clear();
 	}
-    outputFile->clear();
-    outputFile->seekg(0, std::ios::beg);
+    this->goBackToBeginningOutput();
 	return true;
 }
 
@@ -162,9 +169,7 @@ bool JudgeOutput::isValidImages() {
        // std::cout << "[V] image ok" << std::endl;
         elems.clear();
     }
-    // Get back to the beginning of the file
-    outputFile->clear();
-    outputFile->seekg(0, std::ios::beg);
+    this->goBackToBeginningOutput();
     return b;
 }
 
@@ -206,6 +211,76 @@ std::vector<Image> JudgeOutput::getImagesTaken() {
     outputFile->clear();
     outputFile->seekg(0, std::ios::beg);
     return imgs;
+}
+
+/*
+ * Check if no satellite moves the camera faster than w arcseconds per turn between taking two consecutive pictures.
+ * Return true if, false otherwise
+*/
+bool JudgeOutput::isValidCamera() {
+    Image * img1;
+    Image * img2;
+    int turn1, turn2;    
+    Satelite * sat = new Satelite();
+    std::string line;
+
+    // Get the array satelite and number of it
+    Satelite * arraySat = this->simData->getArraySat();
+    long nbSatelite = this->simData->getNbSatelite();
+
+     // Get the first line : number of image taken
+	std::getline(*outputFile, line);
+    std::vector<std::string> elems;
+	int nbImageTaken = std::stoi(line);
+
+    std::getline(*outputFile, line);
+    img1 = new Image();
+    splitStr(line, ' ', elems);
+
+    img1->la = std::stoi(elems[0]);
+    img1->lo = std::stoi(elems[1]);
+    turn1 = std::stoi(elems[2]);
+
+    sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
+
+    for (int i = 0; i < nbImageTaken - 1; i++) {
+        img2 = new Image();
+        
+        std::getline(*outputFile, line);
+        elems.clear();
+
+        splitStr(line, ' ', elems);
+
+        img2->la = std::stoi(elems[0]);
+        img2->lo = std::stoi(elems[1]);
+        turn2 = std::stoi(elems[2]);
+        
+        std::cout << img1->la << " " << img1->lo << " at turn " << turn1 << " with " << img2->la << " " << img2->lo << " at turn " << turn2 << std::endl;
+
+        // Same satelite : we check camera
+        if (sat->id == std::stoi(elems[3])) {
+            if (!this->checkCamera(img1, img2, turn2-turn1)) {
+                return false;
+            }
+        } 
+        // Different satelite
+        else {
+            // Get the satelite from arraySat with his ID
+            sat = getSat(arraySat, nbSatelite, std::stoi(elems[3]));
+        }
+
+        img1->la = img2->la;
+        img1->lo = img2->lo;
+        turn1 = turn2;
+
+        elems.clear();
+    }
+    this->goBackToBeginningOutput();
+    return true;
+}
+
+bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turnDiff) {
+     return true;
 }
 
 /*
