@@ -22,7 +22,7 @@ TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iD
 /*
  * Launches one executable and measures its execution time 
  * Parameters : path of the resolution program and path of the output file
- * Output : execution time in milliseconds
+ * Output : execution time in seconds
  */
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
 
@@ -31,13 +31,15 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
      *   - Changer l'ordre de grandeur des mesures 
      */
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::steady_clock::now();
 
     // Launch the solution :
     // 1 executable takes two parameters : data set and output solution path file
     std::string commandTemp = pathExecutable + " \"" + inputData +  \
                                 "\"" +  " \"" + outputExec + "\"";
     
+    std::cout << "Launching the solution : " << pathExecutable << std::endl;
+
     std::system(commandTemp.c_str());
 
     // Function to pause the system : 
@@ -48,13 +50,13 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
     sleep(timeBreak);
     */
 
-    auto stop = std::chrono::high_resolution_clock::now();
-	auto execTime = std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+    auto stop = std::chrono::steady_clock::now();
+	auto execTime = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
     
     std::cout << "Solution  \"" + pathExecutable + \
                 "\" with data set  \"" + inputData + "\" : " \
               << execTime \
-              << " milliseconds" << std::endl;
+              << " seconds" << std::endl;
 
     return static_cast<long>(execTime);
 }
@@ -174,7 +176,7 @@ bool TimeMeasure::createResults(){
         // TXT mode :
         for (; mit != resultTabs.end(); mit++){
             outputResults << "Exécutable : " << mit->first << std::endl;
-            outputResults << "Temps d'éxécution : " << mit->second.first << " ms" << std::endl;
+            outputResults << "Temps d'éxécution : " << mit->second.first << " seconds" << std::endl;
             outputResults << "Score : " << mit->second.second << " points" << std::endl << std::endl;
             
             if (mit->second.first < minTime.second) {
@@ -205,7 +207,7 @@ bool TimeMeasure::createResults(){
         outputResults << std::endl << std::endl 
                       << "Meilleure solution en terme de temps : "
                       << minTime.first
-                      << " (" << minTime.second << " ms)";
+                      << " (" << minTime.second << " seconds)";
                       // time unit will change
 
         // Best ratio :
@@ -217,7 +219,7 @@ bool TimeMeasure::createResults(){
         
         // CSV mode :
         outputResults << "Tableaux de résultats \n \n" ;
-        outputResults << "Exec, Time, Score \n";
+        outputResults << "Exec, Time (s), Score \n";
 
         for (; mit != resultTabs.end(); mit++){
             outputResults << mit->first << "," 

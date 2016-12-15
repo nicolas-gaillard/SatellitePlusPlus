@@ -18,15 +18,15 @@ int main(int argc, char *argv[]) {
 	double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 	std::cout << "Duration : " << duration << " seconds" << std::endl << std::endl;
 
-
+	*/
 	std::cout << "Test 2 : <chrono> nanosec" << std::endl;
-	auto t1 = std::chrono::high_resolution_clock::now();;
+	auto t1 = std::chrono::steady_clock::now();;
     sleep(5);
-	auto t2 = std::chrono::high_resolution_clock::now();
-    std::cout << "Duration : " << std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+	auto t2 = std::chrono::steady_clock::now();
+    std::cout << "Duration : " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
               << " nanoseconds" << std::endl << std::endl;
 
-
+	/*
 	std::cout << "Test 3 : clock()" << std::endl;
 	clock_t begin = clock();
 	sleep(5);
