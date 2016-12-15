@@ -10,7 +10,7 @@ TimeMeasure::~TimeMeasure(){}
 TimeMeasure::TimeMeasure(std::string iFolder){
     inputFolder = iFolder;
     inputData = "forever_alone.in";
-    outputResults = std::fstream("results.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    outputResults = std::fstream("results.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 
 TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iData){    
@@ -161,8 +161,7 @@ bool TimeMeasure::executeFolder(){
 bool TimeMeasure::createResults(){
     // Normally, the file has been opened during the initialization
     if (outputResults.is_open()) {
-
-        // TXT mode :
+        
         auto mit = resultTabs.begin();
 
          // Ratio : score per time;
@@ -171,6 +170,8 @@ bool TimeMeasure::createResults(){
         std::pair<std::string, int> maxScore(mit->first, mit->second.second);
         std::pair<std::string, long> minTime(mit->first, mit->second.first);
         
+        /*
+        // TXT mode :
         for (; mit != resultTabs.end(); mit++){
             outputResults << "Exécutable : " << mit->first << std::endl;
             outputResults << "Temps d'éxécution : " << mit->second.first << " ms" << std::endl;
@@ -212,23 +213,38 @@ bool TimeMeasure::createResults(){
                       << "Meilleure solution globale (meilleur ratio) : "
                       << bestCompromise.first
                       << " (" << bestCompromise.second << ")";
-
+        */
         
-        /*
         // CSV mode :
         outputResults << "Tableaux de résultats \n \n" ;
         outputResults << "Exec, Time, Score \n";
-        
-        auto it = resultTabs.begin();
 
-        for (; it != resultTabs.end(); it++){
-            outputResults << it->first << "," 
-                          << it->second.first << ","
-                          << it->second.second << " \n";
+        for (; mit != resultTabs.end(); mit++){
+            outputResults << mit->first << "," 
+                          << mit->second.first << ","
+                          << mit->second.second << "\n";
+            
+            if (mit->second.first < minTime.second) {
+                minTime.first = mit->first;
+                minTime.second = mit->second.first;
+            }
+
+            if (mit->second.second > maxScore.second) {
+                maxScore.first = mit->first;
+                maxScore.second = mit->second.second;
+            }
+
+            long tmpRatio = static_cast<long>(mit->second.second) / mit->second.first;
+            if (tmpRatio > bestCompromise.second) {
+                bestCompromise.first = mit->first;
+                bestCompromise.second = tmpRatio;
+            }
         }
 
-        */
-
+        outputResults << "\n \n";
+        outputResults << "Best score :," << maxScore.first << "," << maxScore.second << "\n";
+        outputResults << "Best time :," << minTime.first << "," << minTime.second << "\n";
+        outputResults << "Best compromise:," << bestCompromise.first << "," << bestCompromise.second << "\n";
 
         // We don't have to close it, destructor does this job. 
         // outputResults.close();
