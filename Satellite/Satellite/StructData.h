@@ -43,7 +43,7 @@ struct Collection
 
 struct Result
 {
-	Image * img;
+	int sat;
 	int la;
 	int lo;
 	int turn;

@@ -8,7 +8,7 @@ int main() {
 
 
 	std::string filename = "text/constellation.in";
-	std::string outfilename = "text/4sat4t.out";
+	std::string outfilename = "text/loncon.out";
 
 	std::cout << "================================" << std::endl;
 	std::cout << "\tSATELLITE PLUS PLUS" << std::endl;
