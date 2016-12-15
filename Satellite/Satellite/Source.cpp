@@ -19,12 +19,15 @@ int main(int argc, char *argv[]) {
 	std::cout << "Duration : " << duration << " seconds" << std::endl << std::endl;
 
 	*/
-	std::cout << "Test 2 : <chrono> nanosec" << std::endl;
+
+	/*
+	std::cout << "Test 2 : <chrono> sec" << std::endl;
 	auto t1 = std::chrono::steady_clock::now();;
     sleep(5);
 	auto t2 = std::chrono::steady_clock::now();
     std::cout << "Duration : " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count()
-              << " nanoseconds" << std::endl << std::endl;
+              << " seconds" << std::endl << std::endl;
+	*/
 
 	/*
 	std::cout << "Test 3 : clock()" << std::endl;
@@ -49,6 +52,7 @@ int main(int argc, char *argv[]) {
 
 	*/
 
+	/*
 	std::cout << "Test GetFilesInDirectory" << std::endl;
 	std::vector<std::string> test;	
 	
@@ -62,9 +66,10 @@ int main(int argc, char *argv[]) {
 	for(auto &it : test){
 		std::cout << it << std::endl; 
 	}
+	*/
 
-	std::cout << std::endl << "Test : write in a file " << std::endl;
 	/*
+	std::cout << std::endl << "Test : write in a file " << std::endl;
 	std::fstream toto("/Users/nicolaz/Desktop/toto.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 	toto << "Test 1" << std::endl << "Test 2" << std::endl;
 	toto.close();
@@ -89,4 +94,8 @@ int main(int argc, char *argv[]) {
 		toto << it->second.second << std::endl;
 	
 	}
+
+	std::string yoyo("COUCOUUU");
+	std::cout << yoyo << std::endl;
+	std::cout << (yoyo.substr(0, yoyo.size() - 2)).append(" !") << std::endl;
 }

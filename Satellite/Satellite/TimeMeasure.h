@@ -47,6 +47,7 @@ public:
 	
 	// Measures the execution time of 1 executable on 1 data set :
 	long measureExec(std::string pathExecutable, std::string outputExec);
+	long measureExec(std::string);
 
 	// Lists all files in a directory
 	bool getFilesInDirectory(std::vector<std::string> &out);

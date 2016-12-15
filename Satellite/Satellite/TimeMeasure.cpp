@@ -26,11 +26,6 @@ TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iD
  */
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
 
-    /*
-     * TODO :
-     *   - Changer l'ordre de grandeur des mesures 
-     */
-
     auto start = std::chrono::steady_clock::now();
 
     // Launch the solution :
@@ -58,6 +53,22 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
               << execTime \
               << " seconds" << std::endl;
 
+    return static_cast<long>(execTime);
+}
+
+long TimeMeasure::measureExec(std::string pathExecutable){
+
+    std::string pathOut = (pathExecutable.substr(0, pathExecutable.size() - 2)).append("out");
+    std::string commandTemp = pathExecutable + " \"" + inputData +  \
+                                "\"" +  " \"" + pathOut + "\"";
+
+    auto start = std::chrono::steady_clock::now();
+
+    std::system(commandTemp.c_str());
+
+    auto stop = std::chrono::steady_clock::now();
+	auto execTime = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
+    
     return static_cast<long>(execTime);
 }
 
