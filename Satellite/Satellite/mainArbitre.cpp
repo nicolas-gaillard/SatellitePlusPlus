@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 
     if (argc == 2) {
         tm.setInputData("text/forever_alone.in");
-        tm.setOutputResults("results.csv");
+        tm.setOutputResults("results.txt");
     }
 
     if (argc == 3){
