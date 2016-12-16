@@ -127,129 +127,117 @@ void moveSatelite(Satelite * sat) {
 
 }
 
-int NaiveResolver::makeChoice(std::vector<Image*>possible, Satelite *sat ) {
+Image * NaiveResolver::makeChoice(std::vector<Image*>possible, Satelite *sat ) {
 	int valmax = 0;
 	int idxvalmax ;
 	int val;
 	Image * img;
 	Collection c;
+	if (possible.size() > 900)
+		std::cout << "YOOOOOOLLLOOOOO    " << possible.size() << "\n ";
 	for (size_t i = 0; i < possible.size(); i++)
 	{
 		img = possible[i];
 		c = simData->getArrayCol()[img->coll];
-		val = c.nbPts / (img->nbSat * c.nbPtsLeft * c.nbPtsLeft);
-		if (val > valmax)
+		val = c.nbPts/c.nbPtsLeft ;
+		if (val < valmax)
 			idxvalmax = i;
 	}
-	return idxvalmax;
+
+	return possible[idxvalmax];
 }
-/*
-void NaiveResolver::afterChoice(std::vector<Image*> possible, int idxChoice,Satelite *sat,int turn){
+
+void NaiveResolver::afterChoice(std::vector<Image*> possible,Satelite *sat,int  satidx,int turn, std::string * result,Image * im){
 	Result res;
-	Image tmp_im;
+	Image * tmp_im = new Image();
+	res.img = im;
 	for (size_t idx = 0; idx < possible.size(); idx++)
 	{
-		std::cout << "Image la " << possible[idx]->la << " lo " << possible[idx]->lo << " coll nul " << possible[idx]->coll << std::endl;
-		if (idx == idxChoice) {
-			res.img = possible[idx];
-			continue;
-		}
+		//std::cout << "Image la " << possible[idx]->la << " lo " << possible[idx]->lo << " coll nul " << possible[idx]->coll << std::endl;
 		possible[idx]->nbSat--;
-		if (possible[idx]->nbSat == 0)
-			this->simData->getArrayCol()[possible[idx]->coll].doable = false;
+		if (possible[idx]->nbSat <= 0) {
+			notdoable.insert(possible[idx]->coll);
+			//std::cout << " coll " << possible[idx]->coll << "deleted \n\n";
+		}
 	}
-	std::cout << this->simData->getArrayCol()[res.img->coll].nbPtsLeft << std::endl;
+	//std::cout << this->simData->getArrayCol()[res.img->coll].nbPtsLeft << std::endl;
 	this->simData->getArrayCol()[res.img->coll].nbPtsLeft--;
 	res.la = sat->la;
 	res.lo = sat->lo;
-	res.turn = turn;
 	res.img->taken = true;
+	*result += std::to_string(res.img->la) + " ";
+	*result += std::to_string(res.img->lo) + " ";
+	*result += "" + std::to_string(turn);
+	*result += " " + std::to_string(satidx);
+	*result += '\n';
 
-	tmp_im.la = sat->la - res.img->la;
-	tmp_im.lo = sat->lo - res.img->lo;
-	sat->lastShotRelativePosition = &tmp_im;
+	tmp_im->la = sat->la - res.img->la;
+	tmp_im->lo = sat->lo - res.img->lo;
+	free(sat->lastShotRelativePosition);
+	sat->lastShotRelativePosition = tmp_im;
 	sat->lastShotTurn = turn;
 	// And we save the result in our result string.
 	
 	this->res.push_back(res);
 }
-*/
 
-void NaiveResolver::threadResolv(int i, int n, bool verbose) {
+
+void NaiveResolver::threadResolv(int i, int n, bool verbose, std::string * result) {
 	int maxTurns = simData->getDuration();
 	const int satNb = simData->getNbSatelite();
-	int idxChoice;
+	Image * idxChoice;
 	Satelite tmp;
 	Result r;
-	
+	int val;
 	std::vector<Image*> possible = std::vector<Image*>();
-	// For each turn of the simulation...
 	for (size_t x = i; x < satNb; x = x + n)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
 		Satelite * sat = &simData->getArraySat()[x];
 
-		// For each satelite...
 		for (int turn = 0; turn < maxTurns; turn++) {
-			// We get the current satelite, for better understanding
-			// ... for each existing collection ...
 			for (int j = 0; j < this->simData->getNbCollection(); j++) {
-				// We get the current collection for better understanding
 				Collection coll = simData->getArrayCol()[j];
 				if (notdoable.find(j) == notdoable.end() && isInTimeStamp(turn, coll)) {
-					// Is the right time to take a picture in this collection ?
-						// Yes, so we can iterate through all its images.
 						for (int k = 0; k < coll.nbImg; k++) {
-							if (!this->currentlyProcessing) {
-								if(verbose)
-									std::cout << "Choice step satelite  " << x << " thread no " << i << "/" << n << " get resetted s\n";
-								return;
+							
+							if (isInRange(sat, &coll.listImg[k]) && !coll.listImg[k].taken && !isConflict(sat, coll.listImg[k], turn) ) {
+								possible.push_back(&coll.listImg[k]);
 							}
-							// If the image can be shot, and there is no conflict, then we take the picture.
-							if (isInRange(sat, &coll.listImg[k])  && !coll.listImg[k].taken) {
-								//possible.push_back(&coll.listImg[k]);
-								if (!isConflict(sat, coll.listImg[k], turn)) {
-									coll.listImg[k].taken = true;
-									coll.nbPtsLeft--;
-									Image tmp_im = coll.listImg[k];
-									tmp_im.la = sat->la - coll.listImg[k].la;
-									tmp_im.lo = sat->lo - coll.listImg[k].lo;
-									sat->lastShotRelativePosition = &tmp_im;
-									sat->lastShotTurn = turn;
-									r.sat = x;
-									r.la = coll.listImg[k].la;
-									r.lo = coll.listImg[k].lo;
-									r.turn = turn;
-									res.push_back(r);
-								}
-								else if(coll.listImg[k].nbSat-1 == 0 && hadTakenPhoto(&coll)) {
-									this->currentlyProcessing = false;
-									wrongcoll = j;
-									if(verbose)
-										std::cout << "Choice step satelite  " << x << " thread no " << i << "/" << n << "  reseting simul s\n";
-
-									return;
-								}
-								else
-									coll.listImg[k].nbSat--;
-							}
-
+								
 						}
-					
-
 				}
 				
 			}
-			/*
+			
 			if (possible.size() != 0) {
-				idxChoice = this->makeChoice(possible, sat);
-				this->afterChoice(possible, idxChoice, sat, turn);
-				possible.clear();
-			}*/
-		 	
-			// And finally, we move the satelite.
-			moveSatelite(sat);
+				Image * tmp;
+				val = 0;
+				for (size_t p = 0; p < possible.size(); p++)
+				{
+					possible[i] = tmp;
+					if (simData->getArrayCol()[tmp->coll].nbPts > val) {
+						idxChoice = tmp;
+						val = simData->getArrayCol()[tmp->coll].nbPts;
+					}
+				}
+				Image tmp_im;
+				idxChoice->taken = true;
+				tmp_im.la = sat->la - idxChoice->la;
+				tmp_im.lo = sat->lo - idxChoice->lo;
+				sat->lastShotRelativePosition = &tmp_im;
+				sat->lastShotTurn = turn;
+				// And we save the result in our result string.
+				result[i] += std::to_string(idxChoice->la) + " ";
+				result[i] += std::to_string(idxChoice->lo) + " ";
+				result[i] += "" + std::to_string(turn);
+				result[i] += " " + std::to_string(x);
+				result[i] += '\n';
+				// we don't forget to increment the number of pictures taken, isn't it ?
+				nbPict++;
 
+			} 	
+			moveSatelite(sat);
 		}
 
 		if (verbose) {
@@ -285,10 +273,8 @@ void NaiveResolver::threadPrepResolv(int i, int n ,bool verbose,std::string * re
 					// Yes, so we can iterate through all its images.
 					for (int k = 0; k < coll.nbImg; k++) {
 						// If the image can be shot, and there is no conflict, then we take the picture.
-						if (isInRange(sat, &coll.listImg[k]) ) {
+						if (isInRange(sat, &coll.listImg[k]) ) 
 							coll.listImg[k].nbSat++;
-						}
-						
 					}
 				}
 			}
@@ -320,7 +306,7 @@ void NaiveResolver::checkDoable() {
 		{
 			if (c.listImg[j].nbSat == 0) {
 				cptzero++;
-				c.doable = false;
+				notdoable.insert(j);
 				break;
 			}
 			cptmoyenne += c.listImg[j].nbSat;
@@ -339,72 +325,10 @@ void NaiveResolver::checkDoable() {
 }
 
 
-void NaiveResolver::threadResolv(int i, int n, bool verbose, std::string * result) {
-	int maxTurns = simData->getDuration();
-	int satNb = simData->getNbSatelite();
-	int colNb = simData->getNbCollection();
-	// For each turn of the simulation...
-	for (size_t x = i; x < satNb; x = x + n)
-	{
-		auto start = std::chrono::high_resolution_clock::now();
-		Satelite * sat = &simData->getArraySat()[x];
-		// For each satelite...
-		for (int turn = 0; turn < maxTurns; turn++) {
-			// We get the current satelite, for better understanding
-			// ... for each existing collection ...
-			for (int j = 0; j < colNb; j++) {
-
-				// We get the current collection for better understanding
-				
-
-				if (notdoable.find(j) == notdoable.end()) {
-					Collection coll = simData->getArrayCol()[j];
-					// Is the right time to take a picture in this collection ?
-					if (isInTimeStamp(turn, coll)) {
-						// Yes, so we can iterate through all its images.
-						for (int k = 0; k < coll.nbImg; k++) {
-							// If the image can be shot, and there is no conflict, then we take the picture.
-							//std::cout << "num " << sat->la << " out of " << coll.nbImg << std::endl;
-							//std::cout << "num " << coll.listImg[k].la << " out of " << coll.nbImg << std::endl;
-
-							if (isInRange(sat, &coll.listImg[k]) && !isConflict(sat, coll.listImg[k], turn) && !coll.listImg[k].taken) {
-								// We set the last shot of the satelite to be this picture, at this turn.
-								coll.listImg[k].taken = true;
-								Image tmp_im = coll.listImg[k];
-								tmp_im.la = sat->la - coll.listImg[k].la;
-								tmp_im.lo = sat->lo - coll.listImg[k].lo;
-								sat->lastShotRelativePosition = &tmp_im;
-								sat->lastShotTurn = turn;
-								// And we save the result in our result string.
-								result[i] += std::to_string(coll.listImg[k].la) + " ";
-								result[i] += std::to_string(coll.listImg[k].lo) + " ";
-								result[i] += "" + std::to_string(turn);
-								result[i] += " " + std::to_string(x);
-								result[i] += '\n';
-								// we don't forget to increment the number of pictures taken, isn't it ?
-								nbPict++;
-
-							}
-						}
-					}
-				}
-			}
-			// And finally, we move the satelite.
-			moveSatelite(sat);
-		}
-		if (verbose) {
-			auto end = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<double> diff = end - start;
-			std::cout << " satelite  " << x << " thread no " << i << "/" << n << " time elapsed " << diff.count() << " s\n";
-			std::cout << "[I] Number of picture taken : " << nbPict << std::endl;
-		}
-	}
-}
-
 void NaiveResolver::launchResolution(bool verbose) {
 	// Get data for better reading.
 	int satNb = simData->getNbSatelite();
-	int tmp = 4;
+	int tmp = 1;
 	std::thread *t = new std::thread[tmp];
 	NaiveResolver * th = this;
 	
@@ -418,7 +342,7 @@ void NaiveResolver::launchResolution(bool verbose) {
 	if (verbose) 
 		std::cout << "[I] Start simulation ..." << std::endl;
 	
-
+	/*
 	for (int i = 0; i < tmp; i++) {
 		result[i] = std::string();
 		t[i] = std::thread([&th, i, tmp,result,verbose]() { th->threadPrepResolv(i, tmp,verbose,result); });
@@ -429,52 +353,22 @@ void NaiveResolver::launchResolution(bool verbose) {
 	}
 	verbose = false;
 	this->checkDoable();
-	int doable = 0;
-	for (size_t c = 0; c < simData->getNbCollection(); c++)
-		if (simData->getArrayCol()[c].doable)
-		doable++;
-	std::cout << " nombre doable " << doable << std::endl;
-	do {
-		res.clear();
-		this->resetSat();
-		currentlyProcessing = true;
-		for (int i = 0; i < tmp; i++)
-			t[i] = std::thread([&th, i, tmp, result, verbose]() { th->threadResolv(i, tmp, verbose); });
-
-		for (size_t i = 0; i < tmp; i++)
-			t[i].join();
-
-		if (currentlyProcessing || notdoable.size()>=200)
-			break;
-		notdoable.insert(wrongcoll);
-
-		for (size_t c = 0; c < simData->getNbCollection(); c++) {
-			if (notdoable.find(c) == notdoable.end()) {
-				for (size_t img = 0; img < simData->getArrayCol()[c].nbImg; img++) {
-					simData->getArrayCol()[c].listImg[img].taken = false;
-					simData->getArrayCol()[c].nbPtsLeft = simData->getArrayCol()[c].nbImg;
-				}
-			}
-			
-		}
-		
-		std::cout << " num doable " << wrongcoll << "nondoable" << notdoable.size() << std::endl;
-
-	} while (!currentlyProcessing);
+	
 	std::string filename = "text/constellation.in";
 	DataReceiver * dataReceiver = new DataReceiver(filename);
 	SimulationData d = dataReceiver->extractData();
 	simData = &d;
+	*/
 	for (int i = 0; i < tmp; i++) {
 		result[i] = std::string();
-		t[i] = std::thread([&th, i, tmp, result, verbose]() { th->threadResolv(i, tmp, true, result); });
+		t[i] = std::thread([&th, i, tmp, result, verbose]() { th->threadResolv(i, tmp, true,result); });
 	}
 	for (size_t i = 0; i < tmp; i++)
 	{
 		t[i].join();
 	}
 	
-	
+	std::string output;
 	std::ofstream myfile;
 	myfile.open(outFilename);
 	myfile << std::to_string(nbPict) << std::endl;
@@ -483,3 +377,45 @@ void NaiveResolver::launchResolution(bool verbose) {
 	myfile.close();
 
 }
+
+
+
+
+
+
+
+
+
+
+/*int doable = 0;
+for (size_t c = 0; c < simData->getNbCollection(); c++)
+if (simData->getArrayCol()[c].doable)
+doable++;
+std::cout << " nombre doable " << doable << std::endl;
+do {
+res.clear();
+this->resetSat();
+currentlyProcessing = true;
+for (int i = 0; i < tmp; i++)
+t[i] = std::thread([&th, i, tmp, result, verbose]() { th->threadResolv(i, tmp, verbose); });
+
+for (size_t i = 0; i < tmp; i++)
+t[i].join();
+
+if (currentlyProcessing || notdoable.size()>=200)
+break;
+notdoable.insert(wrongcoll);
+
+for (size_t c = 0; c < simData->getNbCollection(); c++) {
+if (notdoable.find(c) == notdoable.end()) {
+for (size_t img = 0; img < simData->getArrayCol()[c].nbImg; img++) {
+simData->getArrayCol()[c].listImg[img].taken = false;
+simData->getArrayCol()[c].nbPtsLeft = simData->getArrayCol()[c].nbImg;
+}
+}
+
+}
+
+std::cout << " num doable " << wrongcoll << "nondoable" << notdoable.size() << std::endl;
+
+} while (!currentlyProcessing);*/

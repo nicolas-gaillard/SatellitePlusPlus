@@ -19,12 +19,13 @@ public:
 
 private:
 	void checkDoable();
-	int makeChoice(std::vector<Image*> possible, Satelite*);
-	void afterChoice(std::vector<Image*> possible, int i,Satelite *sat,int turn);
+	Image * makeChoice(std::vector<Image*> possible, Satelite*);
+	void afterChoice(std::vector<Image*> possible,Satelite *sat,int satidx,int turn, std::string * result,Image * im);
 	void resetSat();
 	int nbConflict;
 	int nbPict;
 	std::vector<Result> res;
+	std::string * resultStr;
 	bool currentlyProcessing;
 	int wrongcoll;
 	Satelite *  initialData;

@@ -18,7 +18,7 @@ struct Satelite
 	int speed;
 	int speedRot;
 	int maxRot;
-	Image * lastShotRelativePosition;
+	Image *lastShotRelativePosition;
 	int lastShotTurn;
 	int nbImage;
 };
@@ -43,6 +43,7 @@ struct Collection
 
 struct Result
 {
+	Image * img;
 	int sat;
 	int la;
 	int lo;
