@@ -9,10 +9,11 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	}
 }
 
-DataReceiver::DataReceiver(std::string filename,int percent)
+DataReceiver::DataReceiver(std::string filename,int percent, int scoremin)
 {
 	infile =  new std::ifstream(filename);
 	this->percent = percent;
+	this->scoremin = scoremin;
 }
 
 SimulationData DataReceiver::extractData() {
@@ -26,7 +27,7 @@ SimulationData DataReceiver::extractData() {
 	getline(*infile, line);
 	tmpData.setDuration(atoi(line.c_str()));
 	tmpData.setArraySat(this->extractSatelite(&tmpData));
-	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, percent));
+	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, percent, scoremin));
 
 	
 	return tmpData;
@@ -162,7 +163,7 @@ TimeStamp *  DataReceiver::extractTimeStamp(int nb) {
 }
 
 
-Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int threshold){
+Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int threshold=1,int scoremin=1){
 	// Get the original number of collection
 	Collection * oldArrayCol = this->extractCollection(Sd);
 	
@@ -173,14 +174,15 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 
 	for (int i = 0; i < Sd->getNbCollection(); i++)
 	{
-		vecCollection.push_back(oldArrayCol[i]);
+		if(oldArrayCol[i].nbPts>scoremin && oldArrayCol[i].nbImg<20)
+			vecCollection.push_back(oldArrayCol[i]);
 	}
 
 	// Sort the vector 
 	std::sort(vecCollection.begin(), vecCollection.end(), 
 			[](const Collection &a, const Collection &b) -> bool
 				{ 
-					return ((a.nbPts/(a.nbImg*1) > (b.nbPts/ (a.nbImg*1))));
+					return ((a.nbPts/(a.nbImg*a.nbImg) > (b.nbPts/ (b.nbImg*b.nbImg))));
 				}
 			);
 	
@@ -192,9 +194,9 @@ Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int thresh
 	// Set a new collection pointer	
 	Sd->setNbCollection(newSize);
 
-	Collection * arrayCollection = new Collection[newSize];
+	Collection * arrayCollection = new Collection[Sd->getNbCollection()];
 
-	for (int j = 0; j < newSize; j++)
+	for (int j = 0; j < Sd->getNbCollection(); j++)
 	{
 		arrayCollection[j] = vecCollection[j]; 
 	}

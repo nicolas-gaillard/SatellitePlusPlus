@@ -11,7 +11,7 @@
 class DataReceiver
 {
 public:
-	DataReceiver(std::string filename,int percent);
+	DataReceiver(std::string filename,int percent,int scoremin);
 	~DataReceiver();
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
@@ -20,12 +20,12 @@ public:
 	TimeStamp * extractTimeStamp(int nb);
 
 	// Remove a percentage of collection (according to its score and its number of points) 
-	Collection * optiExtractCollection(SimulationData * Sd, int threshold);
+	Collection * optiExtractCollection(SimulationData * Sd, int threshold,int scoremin);
 	// (Threshold in percent)
 
 private:
 	std::ifstream * infile;
 	int percent;
-
+	int scoremin;
 
 };
