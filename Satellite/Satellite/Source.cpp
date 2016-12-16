@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 	std::cout << "================================" << std::endl;
 	std::cout << "[I] Starting naive resolution..." << std::endl;
 
-	DataReceiver * dataReceiver = new DataReceiver(filename, 10);
+	DataReceiver * dataReceiver = new DataReceiver(filename, 15, 1);
 	SimulationData d = dataReceiver->extractData();
 	SimulationData * simData = &d;
 	for (size_t  i = 0; i < simData->getNbCollection(); i++)
