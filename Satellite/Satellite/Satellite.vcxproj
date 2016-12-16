@@ -112,12 +112,14 @@
   <ItemGroup>
     <ClCompile Include="DataReceiver.cpp" />
     <ClCompile Include="Judge.cpp" />
+    <ClCompile Include="NaiveResolver.cpp" />
     <ClCompile Include="SimulationData.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataReceiver.h" />
     <ClInclude Include="Judge.h" />
+    <ClInclude Include="NaiveResolver.h" />
     <ClInclude Include="SimulationData.h" />
     <ClInclude Include="StructData.h" />
   </ItemGroup>

@@ -1,6 +1,5 @@
 #include "DataReceiver.h"
 
-
 void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	std::stringstream ss;
 	ss.str(s);
@@ -10,9 +9,10 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 	}
 }
 
-DataReceiver::DataReceiver(std::string filename)
+DataReceiver::DataReceiver(std::string filename,int percent)
 {
 	infile =  new std::ifstream(filename);
+	this->percent = percent;
 }
 
 SimulationData DataReceiver::extractData() {
@@ -26,7 +26,7 @@ SimulationData DataReceiver::extractData() {
 	getline(*infile, line);
 	tmpData.setDuration(atoi(line.c_str()));
 	tmpData.setArraySat(this->extractSatelite(&tmpData));
-	tmpData.setArrayCol(this->extractCollection(&tmpData));
+	tmpData.setArrayCol(this->optiExtractCollection(&tmpData, percent));
 
 	
 	return tmpData;
@@ -95,6 +95,8 @@ Collection *  DataReceiver::extractCollection(SimulationData * Sd) {
 		tmp->listTimeSt = this->extractTimeStamp(tmp->nbTimeSt);
 		//std::cout << "ok";
 
+		tmp->isValid = true;
+
 		arrayCollection[i] = *tmp;
 		elems.clear();
 	}
@@ -124,7 +126,7 @@ Image *  DataReceiver::extractImage(int nb) {
 
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
-
+		tmp->taken = false;
 		arrayImage[i] = *tmp;
 		elems.clear();
 	}
@@ -160,3 +162,44 @@ TimeStamp *  DataReceiver::extractTimeStamp(int nb) {
 }
 
 
+Collection * DataReceiver::optiExtractCollection(SimulationData * Sd, int threshold){
+	// Get the original number of collection
+	Collection * oldArrayCol = this->extractCollection(Sd);
+	
+	// Create a temporary vector to sort each collection 
+	std::vector<Collection> vecCollection;
+
+	std::cout << "Old size : " << Sd->getNbCollection() << std::endl;
+
+	for (int i = 0; i < Sd->getNbCollection(); i++)
+	{
+		vecCollection.push_back(oldArrayCol[i]);
+	}
+
+	// Sort the vector 
+	std::sort(vecCollection.begin(), vecCollection.end(), 
+			[](const Collection &a, const Collection &b) -> bool
+				{ 
+					return ((a.nbPts/(a.nbImg*1) > (b.nbPts/ (a.nbImg*1))));
+				}
+			);
+	
+	// New size after removing :
+	int newSize = static_cast<int>(static_cast<float>(vecCollection.size()) * (1.0 - static_cast<float>(threshold)/100.0));
+	
+	std::cout << "New size : " << newSize << std::endl;
+
+	// Set a new collection pointer	
+	Sd->setNbCollection(newSize);
+
+	Collection * arrayCollection = new Collection[newSize];
+
+	for (int j = 0; j < newSize; j++)
+	{
+		arrayCollection[j] = vecCollection[j]; 
+	}
+
+	std::cout << " [I] End of the optimisation" << std::endl;
+
+	return arrayCollection;
+}

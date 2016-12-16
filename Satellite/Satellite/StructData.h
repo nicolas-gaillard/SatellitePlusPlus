@@ -1,21 +1,23 @@
 #pragma once
 #include <string>
 
-struct Satelite
+struct Image
 {
 	int id;
+	long la;
+	long lo;
+	bool taken;
+};
+
+struct Satelite
+{
 	long la;
 	long lo;
 	int speed;
 	int speedRot;
 	int maxRot;
-};
-
-struct Image
-{
-	long la;
-	long lo;
-
+	Image * lastShotRelativePosition;
+	int lastShotTurn;
 };
 
 struct TimeStamp {
@@ -30,4 +32,5 @@ struct Collection
 	int nbTimeSt;
 	TimeStamp * listTimeSt;
 	Image * listImg;
+	bool isValid;
 };
