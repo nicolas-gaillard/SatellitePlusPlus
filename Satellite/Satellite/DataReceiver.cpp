@@ -33,7 +33,7 @@ SimulationData DataReceiver::extractData() {
 
 }
 
-Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
+Satelite * DataReceiver::extractSatelite(SimulationData * Sd) {
 
 	std::string line;
 	std::vector<std::string> elems;
@@ -45,12 +45,12 @@ Satelite *  DataReceiver::extractSatelite(SimulationData * Sd) {
 	Satelite * arraySatelite = new Satelite[nb];
 	Satelite * tmp;
 
-
 	for (size_t i = 0; i < nb; i++)
 	{
 		tmp = new Satelite();
 		getline(*infile, line);
 		split(line, ' ', elems);
+		tmp->id = i;
 		tmp->la = atoi(elems[0].c_str());
 		tmp->lo = atoi(elems[1].c_str());
 		tmp->speed = atoi(elems[2].c_str());

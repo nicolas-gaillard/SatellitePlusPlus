@@ -1,8 +1,8 @@
 #pragma once
 #include "SimulationData.h"
+#include "StructData.h"
 #include <string>
 #include <fstream>
-#include "StructData.h"
 #include <sstream>
 #include <vector>
 #include <iostream>
@@ -11,7 +11,7 @@ class DataReceiver
 {
 public:
 	DataReceiver(std::string filename);
-	~DataReceiver();
+	//~DataReceiver();
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
 	Collection * extractCollection(SimulationData * Sd);
