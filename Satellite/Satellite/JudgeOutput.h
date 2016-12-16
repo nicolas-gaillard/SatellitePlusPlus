@@ -3,6 +3,7 @@
 #include "SatUtils.h"
 #include "Utils.h"
 #include <algorithm>
+#include <cmath>
 
 class JudgeOutput {
 
@@ -14,7 +15,8 @@ public:
 	bool isValidImages();
     bool isValidSyntax();
     bool isValidImage(int turn, Image * img, Satelite * sat);
-	bool checkCamera(Image * lastPos, Image * img, int turnDiff);
+	bool isValidCamera();
+	bool checkCamera(Image * lastPos, Image * img, int turn1, int turn2, Satelite* sat);
     int getScore();
 	std::vector<Image> getImagesTaken();
 	void goBackToBeginningOutput();

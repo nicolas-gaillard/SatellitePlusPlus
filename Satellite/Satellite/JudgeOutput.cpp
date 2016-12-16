@@ -259,7 +259,7 @@ bool JudgeOutput::isValidCamera() {
 
         // Same satelite : we check camera
         if (sat->id == std::stoi(elems[3])) {
-            if (!this->checkCamera(img1, img2, turn2-turn1, sat->speedRot)) {
+            if (!this->checkCamera(img1, img2, turn1, turn2, sat)) {
                 return false;
             }
         }
@@ -279,11 +279,20 @@ bool JudgeOutput::isValidCamera() {
     return true;
 }
 
-bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turnDiff, int speedRot) {
-    Image b;
-	b.la = sat->la - im.la;
-	b.lo = sat->lo - im.lo;
-     return true;
+bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2, Satelite * sat) {
+    
+    Satelite * satT1 = getSatPosition(sat, turn1);
+    Satelite * satT2 = getSatPosition(sat, turn2);
+
+    int lat1 = std::abs(satT1->la - lastPos->la);
+    int lo1 = std::abs(satT1->lo - lastPos->lo);
+    
+    int lat2 = std::abs(satT2->la - lastPos->lo);
+    int lo2 = std::abs(satT2->la - img->lo);
+
+    int diffTurn = turn2 - turn1;
+
+    return ( ((lat1 + lat2 <= satT1->speedRot) && ((lo1 + lo2) <= (diffTurn * satT1->speedRot))) );
 }
 
 /*
