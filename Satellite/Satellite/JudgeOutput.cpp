@@ -259,10 +259,10 @@ bool JudgeOutput::isValidCamera() {
 
         // Same satelite : we check camera
         if (sat->id == std::stoi(elems[3])) {
-            if (!this->checkCamera(img1, img2, turn2-turn1)) {
+            if (!this->checkCamera(img1, img2, turn2-turn1, sat->speedRot)) {
                 return false;
             }
-        } 
+        }
         // Different satelite
         else {
             // Get the satelite from arraySat with his ID
@@ -279,7 +279,10 @@ bool JudgeOutput::isValidCamera() {
     return true;
 }
 
-bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turnDiff) {
+bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turnDiff, int speedRot) {
+    Image b;
+	b.la = sat->la - im.la;
+	b.lo = sat->lo - im.lo;
      return true;
 }
 
