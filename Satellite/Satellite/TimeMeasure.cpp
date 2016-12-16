@@ -171,7 +171,7 @@ bool TimeMeasure::executeFolder(){
             std::string pathOutputExec;
             pathOutputExec = vit + "_" + (inputData.substr(0, inputData.size() - 2)) + "out";
 
-            std::cout << vit << std::endl;
+            // std::cout << vit << std::endl;
 
             // Adding the execution time (and leaving the score at 0)
             if ( !(has_suffix(vit, "out")) || !(has_suffix(vit, "in"))) resultTabs[vit] = std::make_pair(measureExec(vit, pathOutputExec), 0);
@@ -188,7 +188,7 @@ bool TimeMeasure::executeFolder(){
         }
     }
 
-    //this->createResults();
+    createResults();
     
     /*
      * To modify only the second value of the pair :
@@ -215,7 +215,6 @@ bool TimeMeasure::createResults(){
         std::pair<std::string, int> maxScore(mit->first, mit->second.second);
         std::pair<std::string, long> minTime(mit->first, mit->second.first);
         
-        /*
         // TXT mode :
         for (; mit != resultTabs.end(); mit++){
             outputResults << "Exécutable : " << mit->first << std::endl;
@@ -258,9 +257,10 @@ bool TimeMeasure::createResults(){
                       << "Meilleure solution globale (meilleur ratio) : "
                       << bestCompromise.first
                       << " (" << bestCompromise.second << ")";
-        */
+
         
         // CSV mode :
+        /*
         outputResults << "Tableaux de résultats \n \n" ;
         outputResults << "Exec, Time (s), Score \n";
 
@@ -293,7 +293,7 @@ bool TimeMeasure::createResults(){
 
         // We don't have to close it, destructor does this job. 
         // outputResults.close();
-
+        */
         return true;
     }
 
