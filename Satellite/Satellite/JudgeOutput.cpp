@@ -281,36 +281,38 @@ bool JudgeOutput::isValidCamera() {
 
 bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2, Satelite * sat) {
     
+    // Get the satellite position
     Satelite * satT1 = getSatPosition(sat, turn1);
     Satelite * satT2 = getSatPosition(sat, turn2);
 
+    // Get the latitude and longitude differences between the first image taken and the satellite
     int la1 = lastPos->la - satT1->la;
-    int la2 = img->la - satT2->la;
-
     int lo1 = satT1->lo - lastPos->lo;
+
+    // Get the latitude and longitude differences between the second image taken and the satellite
+    int la2 = img->la - satT2->la;
     int lo2 = satT2->lo - img->lo;
 
+    // Latitude that the camera has to travel :
     int latToTravel;
-    if ((la1 > 0 && la2 < 0) || (la1 > 0 && la2 < 0)) {
-        latToTravel = std::abs(la1) + std::abs(la2);
-    }
+    /*
+     * Two cases :
+     *     - first one : latitudes differences are both positive or negative 
+     *              --> we simply add these differencies
+     *     - second one : one latitude is negative and the other one positive
+     *              --> we substract these differences
+    */
+    if ((la1 > 0 && la2 < 0) || (la1 > 0 && la2 < 0)) latToTravel = std::abs(la1) + std::abs(la2);
+    else latToTravel = std::abs(std::abs(la1) - std::abs(la2));
 
-    else {
-        latToTravel = std::abs(std::abs(la1) - std::abs(la2));
-    }
 
+    // Longitude that the camera has to travel :
     int loToTravel;
-     if ((lo1 > 0 && lo2 < 0) || (lo1 > 0 && lo2 < 0)) {
-        loToTravel = std::abs(lo1) + std::abs(lo2);
-    }
+    // Same cases as above
+    if ((lo1 > 0 && lo2 < 0) || (lo1 > 0 && lo2 < 0)) loToTravel = std::abs(lo1) + std::abs(lo2);
+    else loToTravel = std::abs(std::abs(lo1) - std::abs(lo2));
 
-    else {
-        loToTravel = std::abs(std::abs(lo1) - std::abs(lo2));
-    }
-
-    //int latToTravel = std::abs(satT1->la - lastPos->la) + std::abs(satT2->la - img->la);
-    //int loToTravel = std::abs(satT1->lo - lastPos->lo) + std::abs(satT2->lo - img->lo);
-
+    // Difference between the two turns :
     int diffTurn = turn2 - turn1;
 
     return ( (latToTravel <= (diffTurn * satT1->speedRot)) && (loToTravel <= (diffTurn * satT1->speedRot)) );
