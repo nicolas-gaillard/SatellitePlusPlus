@@ -11,6 +11,7 @@ struct Image
 
 struct Satelite
 {
+	int id;
 	long la;
 	long lo;
 	int speed;

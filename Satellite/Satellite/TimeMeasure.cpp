@@ -26,12 +26,12 @@ TimeMeasure::TimeMeasure(std::string iFolder, std::string output, std::string iD
  */
 long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec){
 
-    auto start = std::chrono::steady_clock::now();
-
     // Launch the solution :
     // 1 executable takes two parameters : data set and output solution path file
     std::string commandTemp = pathExecutable + " \"" + inputData +  \
                                 "\"" +  " \"" + outputExec + "\"";
+
+    auto start = std::chrono::steady_clock::now();
     
     std::cout << "Launching the solution : " << pathExecutable << std::endl;
 

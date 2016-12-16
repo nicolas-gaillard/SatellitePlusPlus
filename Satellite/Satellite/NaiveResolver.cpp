@@ -13,18 +13,7 @@ NaiveResolver::NaiveResolver(SimulationData * simDat, std::string filename) {
 	memcpy(initialData, simData->getArraySat(), sizeof(Satelite)*simData->getNbSatelite());
 }
 
-/*
-Check if an image can be taken by a satelite without checking conflicts
-*/
-bool isInRange(Satelite * sat, Image * im, bool debug=false) {
-	if (debug) {
-		std::cout << std::endl << "Lat Sat : " << sat->la << std::endl;
-		std::cout << "Lat im : " << im->la << std::endl;
-		std::cout << "Sat - Im : " << std::abs(sat->la - im->la) << std::endl;
-		std::cout << "Max Rotation : " << sat->maxRot << std::endl;
-	}
-	return (std::abs(sat->la - im->la) <= sat->maxRot) && (std::abs(sat->lo - im->lo) < sat->maxRot);
-}
+
 
 /*
 Check if a picture can be taken at the given turn for the given collection.
@@ -65,42 +54,7 @@ bool isConflict(Satelite * sat, Image im, int turn) {
 	else {
 		// We return the fact that there is a conflict or not.
 		return std::sqrt(std::pow(b.la - a->la, 2.0) + std::pow(b.lo - a->lo, 2.0)) > (sat->speedRot * (turn - sat->lastShotTurn));
-	}
-
-	
-	
-}
-
-/*
-Move the given satelite at his position one turn after.
-*/
-void moveSatelite(Satelite * sat) {
-	// Initialize the new coordinates
-	int new_lo = 0;
-	int new_la = 0;
-	int new_speed = 0;
-
-	// Compute the new coordinates
-	if (sat->la + sat->speed >= -90 * 60 * 60 && sat->la + sat->speed <= 90 * 60 * 60) {
-		new_speed = sat->speed;
-		new_la = sat->la + sat->speed; new_lo = sat->lo - 15;
-	}
-	else if (sat->la + sat->speed>90 * 60 * 60) {
-		new_speed = -sat->speed;
-		new_la = 180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
-	}
-	else if (sat->la + sat->speed < -90 * 60 * 60) {
-		new_speed = -sat->speed;
-		new_la = -180 * 60 * 60 - (sat->la + sat->speed); new_lo = -180 * 60 * 60 + sat->lo - 15;
-	}
-	if (new_lo < -648000)new_lo += 360 * 60 * 60;
-	if (new_lo > 647999)new_lo -= 360 * 60 * 60;
-
-	// Set the new coordinates to the satelite
-	sat->lo = new_lo;
-	sat->la = new_la;
-	sat->speed = new_speed;
-
+	}	
 }
 
 void NaiveResolver::resetTakenPictures() {

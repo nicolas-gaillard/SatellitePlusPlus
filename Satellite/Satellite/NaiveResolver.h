@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include "SimulationData.h"
+#include "Utils.h"
+#include "SatUtils.h"
 
 class NaiveResolver {
 

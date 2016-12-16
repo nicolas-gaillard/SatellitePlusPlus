@@ -11,7 +11,13 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 
 DataReceiver::DataReceiver(std::string filename,int percent)
 {
+	//std::cout << filename << std::endl;
 	infile =  new std::ifstream(filename);
+	/*
+	std::string line;
+	getline(*infile, line);
+	std::cout << line << std::endl;
+	*/
 	this->percent = percent;
 }
 

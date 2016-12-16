@@ -1,29 +1,30 @@
 #include "TimeMeasure.h"
 
 /*
- * 2 paramètres :
- *    - répertoire des exécutable
- *    - nom du fichier de sortie
- *    - nom du jeu de données
+ * 3 parameters possible (the first one is obligatory):
+ *    - executable directory
+ *    - output name
+ *    - input name 
  */
 int main(int argc, char *argv[]) {
-    TimeMeasure tm(argv[0]);
+    TimeMeasure tm(argv[1]);
 
-    if (argc == 1) {
+    if (argc == 2) {
         tm.setInputData("text/forever_alone.in");
         tm.setOutputResults("results.csv");
     }
 
-    if (argc == 2){
-        tm.setOutputResults(argv[1]);
+    if (argc == 3){
+        tm.setOutputResults(argv[2]);
         tm.setInputData("text/forever_alone.in");
     }
 
-    if (argc == 3) {
-        tm.setOutputResults(argv[1]);
-        tm.setInputData(argv[2]);
+    if (argc == 4) {
+        tm.setOutputResults(argv[2]);
+        tm.setInputData(argv[3]);
     }
 
-    std::vector<std::string> listFiles;
+    if (argc > 4) return 0;
+
     tm.executeFolder();    
 }
