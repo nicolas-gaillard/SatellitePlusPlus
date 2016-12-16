@@ -58,7 +58,11 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
 
 long TimeMeasure::measureExec(std::string pathExecutable){
 
-    std::string pathOut = (pathExecutable.substr(0, pathExecutable.size() - 2)).append("out");
+
+    std::string pathOut = pathExecutable.append("_").append((inputData.substr(0, inputData.size() - 2)).append("out"));
+    
+    // (pathExecutable.substr(0, pathExecutable.size() - 2)).append("out");
+    
     std::string commandTemp = pathExecutable + " \"" + inputData +  \
                                 "\"" +  " \"" + pathOut + "\"";
 

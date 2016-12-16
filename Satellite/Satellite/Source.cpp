@@ -94,8 +94,9 @@ int main(int argc, char *argv[]) {
 		toto << it->second.second << std::endl;
 	
 	}
-
+	std::string yaya("test");
 	std::string yoyo("COUCOUUU");
 	std::cout << yoyo << std::endl;
+	std::cout << yaya.append("_").append((yoyo.substr(0, yoyo.size() - 2)).append(" !")) << std::endl;
 	std::cout << (yoyo.substr(0, yoyo.size() - 2)).append(" !") << std::endl;
 }
