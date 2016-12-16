@@ -14,7 +14,6 @@ public:
 	bool isValidImages();
     bool isValidSyntax();
     bool isValidImage(int turn, Image * img, Satelite * sat);
-	bool isValidCamera();
 	bool checkCamera(Image * lastPos, Image * img, int turnDiff);
     int getScore();
 	std::vector<Image> getImagesTaken();
