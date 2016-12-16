@@ -30,13 +30,10 @@ int main(int argc, char *argv[]) {
 	std::cout << "================================" << std::endl;
 	std::cout << "[I] Starting naive resolution..." << std::endl;
 
-	DataReceiver * dataReceiver = new DataReceiver(filename, 15, 1);
+	DataReceiver * dataReceiver = new DataReceiver(filename, 10, 100);
 	SimulationData d = dataReceiver->extractData();
 	SimulationData * simData = &d;
-	for (size_t  i = 0; i < simData->getNbCollection(); i++)
-	{
-		std::cout << "nb points" <<simData->getArrayCol()[i].nbPts << "nb image "<< simData->getArrayCol()[i].nbImg<< "\n";
-	}
+	
 	if (simData->getNbSatelite() == 0)
 	std::cout << "[E] Error on reading file : No such file." << std::endl;
 	std::cout << "[S] Success."  << std::endl;
