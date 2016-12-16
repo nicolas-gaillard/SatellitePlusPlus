@@ -284,12 +284,38 @@ bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2
     Satelite * satT1 = getSatPosition(sat, turn1);
     Satelite * satT2 = getSatPosition(sat, turn2);
 
-    int latToTravel = std::abs(satT1->la - lastPos->la) + std::abs(satT2->la - img->la);
-    int loToTravel = std::abs(satT1->lo - lastPos->lo) + std::abs(satT2->lo - img->lo);
+    int la1 = lastPos->la - satT1->la;
+    int la2 = img->la - satT2->la;
+
+    int lo1 = satT1->lo - lastPos->lo;
+    int lo2 = satT2->lo - img->lo;
+
+    int latToTravel;
+    // xor 
+    if (!(la1 > 0 && la2 < 0) != !(la1 > 0 && la2 < 0)) {
+        latToTravel = std::abs(la1) + std::abs(la2);
+    }
+
+    else {
+        latToTravel = std::abs(std::abs(la1) - std::abs(la2));
+    }
+
+    int loToTravel;
+    // xor
+     if (!(lo1 > 0 && lo2 < 0) != !(lo1 > 0 && lo2 < 0)) {
+        loToTravel = std::abs(lo1) + std::abs(lo2);
+    }
+
+    else {
+        loToTravel = std::abs(std::abs(lo1) - std::abs(lo2));
+    }
+
+    //int latToTravel = std::abs(satT1->la - lastPos->la) + std::abs(satT2->la - img->la);
+    //int loToTravel = std::abs(satT1->lo - lastPos->lo) + std::abs(satT2->lo - img->lo);
 
     int diffTurn = turn2 - turn1;
 
-    return ( ((latToTravel<= (diffTurn * satT1->speedRot)) && (loToTravel <= (diffTurn * satT1->speedRot))) );
+    return ( (latToTravel <= (diffTurn * satT1->speedRot)) && (loToTravel <= (diffTurn * satT1->speedRot)) );
 }
 
 /*
