@@ -278,9 +278,12 @@ bool JudgeOutput::isValidCamera() {
     this->goBackToBeginningOutput();
     return true;
 }
-
+/*
+ * Check if one satellite sat moves the camera faster than w arcseconds between turn1 and turn2
+ * Return true if, false otherwise
+ */
 bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2, Satelite * sat) {
-    
+    //satelite's positions at turn1 and turn2
     Satelite * satT1 = getSatPosition(sat, turn1);
     Satelite * satT2 = getSatPosition(sat, turn2);
 
@@ -289,7 +292,7 @@ bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2
 
     int lo1 = satT1->lo - lastPos->lo;
     int lo2 = satT2->lo - img->lo;
-
+    
     int latToTravel;
     if ((la1 > 0 && la2 < 0) || (la1 > 0 && la2 < 0)) {
         latToTravel = std::abs(la1) + std::abs(la2);
