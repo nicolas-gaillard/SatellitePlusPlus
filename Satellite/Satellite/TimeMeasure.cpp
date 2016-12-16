@@ -59,7 +59,7 @@ long TimeMeasure::measureExec(std::string pathExecutable, std::string outputExec
 long TimeMeasure::measureExec(std::string pathExecutable){
 
 
-    std::string pathOut = pathExecutable.append("_").append((inputData.substr(0, inputData.size() - 2)).append("out"));
+    std::string pathOut = pathExecutable + "_" + (inputData.substr(0, inputData.size() - 2)) + "out";
     
     // (pathExecutable.substr(0, pathExecutable.size() - 2)).append("out");
     
@@ -129,6 +129,8 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
         // Check if the file is a directory :
         const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
+        std::cout << full_file_name << std::endl;
+
         // If the file is not a directory, add it on the vector 
         if (!((file_name[0] == '.') || (stat(full_file_name.c_str(), &st) == -1) || is_directory))
             out.push_back(full_file_name);
@@ -157,15 +159,19 @@ bool TimeMeasure::executeFolder(){
     if (getFilesInDirectory(execList)) {
         // Browsing the vector :
         for (auto &vit : execList){
+
+            // std::cout << vit << "vecteur" << std::endl;
             
             std::string pathOutputExec;
-            pathOutputExec = vit.append("_").append((inputData.substr(0, inputData.size() - 2)).append("out"));
+            pathOutputExec = vit + "_" + (inputData.substr(0, inputData.size() - 2)) + "out";
+
+            // std::cout << pathOutputExec << std::endl;
 
             // Adding the execution time (and leaving the score at 0) 
             resultTabs[vit] = std::make_pair(measureExec(vit, pathOutputExec), 0);
 
             // Check the output file :
-            DataReceiver rc = DataReceiver(inputData);
+            DataReceiver rc = DataReceiver(inputData,15);
             SimulationData data = rc.extractData();
             JudgeOutput jo(pathOutputExec, &data); 
 

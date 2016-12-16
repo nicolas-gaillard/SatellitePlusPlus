@@ -7,6 +7,8 @@
  *    - input name 
  */
 int main(int argc, char *argv[]) {
+    std::cout << argv[1] << std::endl;
+
     TimeMeasure tm(argv[1]);
 
     if (argc == 2) {

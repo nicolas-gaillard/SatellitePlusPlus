@@ -12,7 +12,7 @@ class DataReceiver
 {
 public:
 	DataReceiver(std::string filename,int percent);
-	~DataReceiver();
+	//~DataReceiver();
 	SimulationData extractData();
 	Satelite * extractSatelite(SimulationData * Sd);
 	Collection * extractCollection(SimulationData * Sd);
