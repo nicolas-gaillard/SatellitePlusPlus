@@ -9,6 +9,9 @@ Projet c++ pour répondre au challenge google
 Nos résultats de score dépendent entièrement de données de seuillage écrite en dur dans notre programme d'où la non correspondance entre les fichiers de résultats postés et la version de l'exécutable présente dans master car nous adaptons les données de seuillage à chaque jeu de données (ce qui nous forcerait à avoir 4 executables pour chaque jeu).
 
 
+L'arbitrage fonctionne partiellement sous Linux et pas du tout sur Windows.
+
+
 ##### Etat actuel des choses :
 
 1. StructData.h contient la structure des différents conteneurs de données
