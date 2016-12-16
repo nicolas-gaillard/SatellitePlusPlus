@@ -291,8 +291,7 @@ bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2
     int lo2 = satT2->lo - img->lo;
 
     int latToTravel;
-    // xor 
-    if (!(la1 > 0 && la2 < 0) != !(la1 > 0 && la2 < 0)) {
+    if ((la1 > 0 && la2 < 0) || (la1 > 0 && la2 < 0)) {
         latToTravel = std::abs(la1) + std::abs(la2);
     }
 
@@ -301,8 +300,7 @@ bool JudgeOutput::checkCamera(Image * lastPos, Image * img, int turn1, int turn2
     }
 
     int loToTravel;
-    // xor
-     if (!(lo1 > 0 && lo2 < 0) != !(lo1 > 0 && lo2 < 0)) {
+     if ((lo1 > 0 && lo2 < 0) || (lo1 > 0 && lo2 < 0)) {
         loToTravel = std::abs(lo1) + std::abs(lo2);
     }
 
