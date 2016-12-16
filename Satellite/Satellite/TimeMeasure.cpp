@@ -157,8 +157,22 @@ bool TimeMeasure::executeFolder(){
     if (getFilesInDirectory(execList)) {
         // Browsing the vector :
         for (auto &vit : execList){
+            
+            std::string pathOutputExec;
+            pathOutputExec = vit.append("_").append((inputData.substr(0, inputData.size() - 2)).append("out"));
+
             // Adding the execution time (and leaving the score at 0) 
-            resultTabs[vit] = std::make_pair(measureExec(vit, vit + "_out"), 0);
+            resultTabs[vit] = std::make_pair(measureExec(vit, pathOutputExec), 0);
+
+            // Check the output file :
+            DataReceiver rc = DataReceiver(inputData);
+            SimulationData data = rc.extractData();
+            JudgeOutput jo(pathOutputExec, &data); 
+
+            // If the output is valid, we update the score 
+            if (jo.isValidOutput()) {
+                resultTabs[vit].second = static_cast<long>(jo.getScore());
+            }
         }
     }
     

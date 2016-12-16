@@ -15,6 +15,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "JudgeOutput.h"
+
 class TimeMeasure{
 
 private:
@@ -39,8 +41,16 @@ public:
 	// Getters 
 	// -------
 
-	// inline std::fstream getOutputResults(){return outputResults;}
-	// inline std::map<std::string, std::pair<long, long> > getResultTabs(){return resultTabs;}
+	inline std::fstream& getOutputResults(){return outputResults;}
+	inline std::map<std::string, std::pair<long, long> > getResultTabs(){return resultTabs;}
+	inline std::string getInputData(){return inputData;}
+	inline std::string getInputFolder(){return inputFolder;}
+	
+	// Setters :
+	// ---------
+	inline void setInputData(std::string s) {inputData = s;}
+	inline void setInputFolder(std::string s) {inputFolder = s;}
+	inline void setOutputResults(std::string s) {outputResults = std::fstream(s.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);;}
 
 	// Functions :
 	// -----------
