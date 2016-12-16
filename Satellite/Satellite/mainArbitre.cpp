@@ -12,13 +12,13 @@ int main(int argc, char *argv[]) {
     TimeMeasure tm(argv[1]);
 
     if (argc == 2) {
-        tm.setInputData("../text/forever_alone.in");
+        tm.setInputData("text/forever_alone.in");
         tm.setOutputResults("results.csv");
     }
 
     if (argc == 3){
         tm.setOutputResults(argv[2]);
-        tm.setInputData("../text/forever_alone.in");
+        tm.setInputData("text/forever_alone.in");
     }
 
     if (argc == 4) {

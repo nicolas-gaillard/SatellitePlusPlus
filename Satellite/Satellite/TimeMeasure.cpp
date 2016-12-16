@@ -129,7 +129,7 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
         // Check if the file is a directory :
         const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
-        std::cout << full_file_name << std::endl;
+        //std::cout << full_file_name << std::endl;
 
         // If the file is not a directory, add it on the vector 
         if (!((file_name[0] == '.') || (stat(full_file_name.c_str(), &st) == -1) || is_directory))
@@ -146,6 +146,12 @@ bool TimeMeasure::getFilesInDirectory(std::vector<std::string> &out)
 #endif
 } 
 
+bool has_suffix(const std::string &str, const std::string &suffix)
+{
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 /*
  * Launches each executable in the folder
  * Parameters : 
@@ -160,18 +166,18 @@ bool TimeMeasure::executeFolder(){
         // Browsing the vector :
         for (auto &vit : execList){
 
-            // std::cout << vit << "vecteur" << std::endl;
+            std::cout << "vecteur : " << vit  << std::endl;
             
             std::string pathOutputExec;
             pathOutputExec = vit + "_" + (inputData.substr(0, inputData.size() - 2)) + "out";
 
-            // std::cout << pathOutputExec << std::endl;
+            std::cout << vit << std::endl;
 
-            // Adding the execution time (and leaving the score at 0) 
-            resultTabs[vit] = std::make_pair(measureExec(vit, pathOutputExec), 0);
+            // Adding the execution time (and leaving the score at 0)
+            if ( !(has_suffix(vit, "out")) || !(has_suffix(vit, "in"))) resultTabs[vit] = std::make_pair(measureExec(vit, pathOutputExec), 0);
 
             // Check the output file :
-            DataReceiver rc = DataReceiver(inputData,15);
+            DataReceiver rc = DataReceiver(inputData,15,1);
             SimulationData data = rc.extractData();
             JudgeOutput jo(pathOutputExec, &data); 
 
@@ -181,6 +187,8 @@ bool TimeMeasure::executeFolder(){
             }
         }
     }
+
+    //this->createResults();
     
     /*
      * To modify only the second value of the pair :
